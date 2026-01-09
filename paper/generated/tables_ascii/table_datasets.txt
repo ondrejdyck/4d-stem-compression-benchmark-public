@@ -1,0 +1,7 @@
+Dataset     | Shape                | Size    | Sparsity | Description                            
+------------+----------------------+---------+----------+----------------------------------------
+4D_EELS     | (64, 64, 256, 1024)  | 2.0 GiB | 92.8%    | Full 4D EELS spectrum imaging          
+4D_Diff     | (256, 256, 256, 256) | 8.0 GiB | 74.7%    | 4D STEM diffraction (unbinned)         
+4D_Diff-2x2 | (256, 256, 128, 128) | 4.0 GiB | 70.9%    | 4D STEM diffraction (2$\times$2 binned)
+4D_Diff-4x4 | (256, 256, 64, 64)   | 1.0 GiB | 60.9%    | 4D STEM diffraction (4$\times$4 binned)
+3D_EELS     | (64, 64, 1, 1024)    | 8.0 MiB | 49.5%    | Y-summed EELS spectrum image           

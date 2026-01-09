@@ -1,0 +1,4 @@
+strategy,chunk_size,mean_ratio,mean_write_gbs,mean_read_gbs,n_methods
+Real-space,"(32, 32, 256, 256)",6.928502,0.725620,1.668772,13
+Balanced,"(16, 16, 128, 128)",6.669783,0.627874,1.186219,13
+Single-frame,"(1, 1, 256, 256)",6.882310,0.741251,1.682917,13

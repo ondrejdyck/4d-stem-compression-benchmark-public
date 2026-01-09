@@ -1,0 +1,6 @@
+dataset,size_gib,sparsity_pct,best_ratio,implementation,file_size_mib
+4D_EELS,2.000000,92.832,34.921896,blosc_zstd,58.645155
+4D_Diff,8.000000,74.735,10.199716,blosc_zstd (real-space),803.159625
+4D_Diff-2x2-binning,4.000000,70.891,11.278807,blosc_zlib (real-space),363.158961
+4D_Diff-4x4-binning,1.000000,60.910,6.935924,blosc_zlib (real-space),147.637139
+3D_EELS,0.007812,49.472,4.835565,blosc_zlib,1.654408

@@ -1,0 +1,9 @@
+Implementation Family | Mean Ratio | Range      | Mean Write (s)
+----------------------+------------+------------+---------------
+Blosc (zlib)          | 13.5x      | 4.8--34.8x | 19.3          
+Blosc (zstd)          | 13.5x      | 4.8--34.9x | 8.3           
+Gzip-9                | 12.3x      | 4.2--32.6x | 249.9         
+Gzip-6                | 11.6x      | 4.1--30.6x | 47.4          
+Blosc (lz4hc)         | 10.1x      | 3.7--25.2x | 14.8          
+Szip                  | 9.2x       | 2.7--24.7x | 9.8           
+Blosc (lz4)           | 7.9x       | 3.0--18.7x | 1.9           

@@ -1,0 +1,7 @@
+Dataset             | Size (GiB) | Sparsity (%) | Best Ratio | Implementation          | File Size (MiB)
+--------------------+------------+--------------+------------+-------------------------+----------------
+4D_EELS             | 2.0        | 92.8         | 34.9x      | blosc_zstd              | 58.6           
+4D_Diff             | 8.0        | 74.7         | 10.2x      | blosc_zstd (real-space) | 803.2          
+4D_Diff-2x2-binning | 4.0        | 70.9         | 11.3x      | blosc_zlib (real-space) | 363.2          
+4D_Diff-4x4-binning | 1.0        | 60.9         | 6.9x       | blosc_zlib (real-space) | 147.6          
+3D_EELS             | 0.008      | 49.5         | 4.8x       | blosc_zlib              | 1.7            

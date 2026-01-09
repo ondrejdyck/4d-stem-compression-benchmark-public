@@ -1,0 +1,6 @@
+dataset_id,filename,hdf5_path,dtype,itemsize_bytes,shape,n_elements,file_size_bytes,uncompressed_bytes,uncompressed_gb,uncompressed_mb,zero_count,sparsity_fraction,max_value,max_location,max_bits_int,count_gt_4095,count_gt_16383
+3D_EELS,3D_EELS.emd,version_1/data/datacubes/datacube_000/data,uint16,2,"(64, 64, 1, 1024)",4194304,8405624,8388608,0.008389,8.389,2074994,0.494717,65535.000000,"(0, 0, 0, 58)",16,62118,14193
+4D_Diff,4D_Diff.emd,version_1/data/datacubes/datacube_000/data,uint16,2,"(256, 256, 256, 256)",4294967296,8589951608,8589934592,8.589935,8589.935,3209856515,0.747353,4016.000000,"(99, 12, 191, 98)",12,0,0
+4D_Diff-2x2-binning,4D_Diff-2x2-binning.emd,version_1/data/datacubes/datacube_000/data,float32,4,"(256, 256, 128, 128)",1073741824,4294984312,4294967296,4.294967,4294.967,761188099,0.708912,1035.500000,"(99, 12, 95, 49)",,0,0
+4D_Diff-4x4-binning,4D_Diff-4x4-binning.emd,version_1/data/datacubes/datacube_000/data,float32,4,"(256, 256, 64, 64)",268435456,1073758840,1073741824,1.073742,1073.742,163504136,0.609100,296.500000,"(99, 12, 47, 24)",,0,0
+4D_EELS,4D_EELS.emd,version_1/data/datacubes/datacube_000/data,uint16,2,"(64, 64, 256, 1024)",1073741824,2147500664,2147483648,2.147484,2147.484,996772447,0.928317,4095.000000,"(0, 0, 40, 60)",12,0,0

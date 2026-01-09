@@ -1,0 +1,70 @@
+====================================================================================================
+MULTI-RUN BENCHMARK STATISTICS SUMMARY
+====================================================================================================
+
+Total runs: 10
+Datasets: 5
+Methods per dataset: 42
+Total measurements: 2100
+
+====================================================================================================
+MEASUREMENT VARIABILITY (Coefficient of Variation %)
+====================================================================================================
+
+Compression Ratio:
+  Mean CV: 0.00%
+  Median CV: 0.00%
+  Max CV: 0.00%
+  Min CV: 0.00%
+
+Write Time:
+  Mean CV: 1.83%
+  Median CV: 1.16%
+  Max CV: 13.27%
+  Min CV: 0.08%
+
+Read Time:
+  Mean CV: 1.74%
+  Median CV: 1.29%
+  Max CV: 15.92%
+  Min CV: 0.24%
+
+Write Throughput:
+  Mean CV: 1.64%
+  Median CV: 1.11%
+  Max CV: 11.58%
+  Min CV: 0.08%
+
+Read Throughput:
+  Mean CV: 1.63%
+  Median CV: 1.25%
+  Max CV: 11.97%
+  Min CV: 0.24%
+
+====================================================================================================
+TOP 10 METHODS BY COMPRESSION RATIO (Mean ± Std)
+====================================================================================================
+
+Rank   Dataset              Method                         Ratio                CV%       
+----------------------------------------------------------------------------------------------------
+1      4D_EELS              balanced_blosc_zstd            34.92 ± 0.00         0.00%     
+2      4D_EELS              balanced_blosc_zlib            34.76 ± 0.00         0.00%     
+3      4D_EELS              real_space_blosc_zstd          33.50 ± 0.00         0.00%     
+4      4D_EELS              real_space_blosc_zlib          33.04 ± 0.00         0.00%     
+5      4D_EELS              balanced_gzip_9                32.55 ± 0.00         0.00%     
+6      4D_EELS              single_frame_szip              31.66 ± 0.00         0.00%     
+7      4D_EELS              real_space_gzip_9              30.99 ± 0.00         0.00%     
+8      4D_EELS              balanced_gzip_6                30.59 ± 0.00         0.00%     
+9      4D_EELS              single_frame_blosc_zstd        30.28 ± 0.00         0.00%     
+10     4D_EELS              single_frame_blosc_zlib        29.64 ± 0.00         0.00%     
+
+====================================================================================================
+NOTES
+====================================================================================================
+
+- CV% (Coefficient of Variation) = (std / mean) × 100
+- Low CV% (<5%) indicates consistent performance across runs
+- High CV% (>10%) may indicate system load variability or measurement noise
+- Compression ratio should have very low CV% (deterministic)
+- Timing measurements typically have higher CV% (system-dependent)
+

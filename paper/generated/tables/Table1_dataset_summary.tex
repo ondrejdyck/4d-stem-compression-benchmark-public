@@ -1,0 +1,16 @@
+\begin{table}[h]
+\centering
+\caption{Dataset characteristics and best compression performance achieved. Chunking strategy is specified in parentheses where it differs from balanced.}
+\label{tab:dataset_summary}
+\begin{tabular}{lrrrll}
+\hline
+Dataset & Size (GiB) & Sparsity (\%) & Best Ratio & Implementation & File Size (MiB) \\
+\hline
+4D\_EELS & 2.0 & 92.8 & 34.9$\times$ & blosc\_zstd & 58.6 \\
+4D\_Diff & 8.0 & 74.7 & 10.2$\times$ & blosc\_zstd (real-space) & 803.2 \\
+4D\_Diff-2x2-binning & 4.0 & 70.9 & 11.3$\times$ & blosc\_zlib (real-space) & 363.2 \\
+4D\_Diff-4x4-binning & 1.0 & 60.9 & 6.9$\times$ & blosc\_zlib (real-space) & 147.6 \\
+3D\_EELS & 0.008 & 49.5 & 4.8$\times$ & blosc\_zlib & 1.7 \\
+\hline
+\end{tabular}
+\end{table}
