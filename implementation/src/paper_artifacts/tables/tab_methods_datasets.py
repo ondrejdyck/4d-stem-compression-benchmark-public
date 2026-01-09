@@ -2,9 +2,9 @@
 """Generate the Methods dataset table in LaTeX/ASCII/CSV.
 
 Outputs (synchronized):
-- LaTeX:  paper/generated/tables/table_datasets.tex
-- ASCII:  paper/generated/tables_ascii/table_datasets.txt
-- CSV:    paper/generated/tables_csv/table_datasets.csv
+- LaTeX:  paper/generated/tables/Table1_datasets.tex
+- ASCII:  paper/generated/tables_ascii/Table1_datasets.txt
+- CSV:    paper/generated/tables_csv/Table1_datasets.csv
 
 Input (source of truth):
 - results/dataset_inventory.csv
@@ -191,9 +191,9 @@ def main() -> None:
     inv = pd.read_csv(inv_path)
     rows = build_rows(inv)
 
-    out_tex = repo_root / "paper" / "generated" / "tables" / "table_datasets.tex"
-    out_txt = repo_root / "paper" / "generated" / "tables_ascii" / "table_datasets.txt"
-    out_csv = repo_root / "paper" / "generated" / "tables_csv" / "table_datasets.csv"
+    out_tex = repo_root / "paper" / "generated" / "tables" / "Table1_datasets.tex"
+    out_txt = repo_root / "paper" / "generated" / "tables_ascii" / "Table1_datasets.txt"
+    out_csv = repo_root / "paper" / "generated" / "tables_csv" / "Table1_datasets.csv"
 
     write_latex(rows, out_tex)
     write_ascii(rows, out_txt)

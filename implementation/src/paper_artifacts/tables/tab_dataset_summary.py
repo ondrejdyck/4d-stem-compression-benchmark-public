@@ -3,9 +3,9 @@
 
 This script updates the public-release "version-of-record" artifacts:
 
-- LaTeX:  paper/generated/tables/Table1_dataset_summary.tex
-- ASCII:  paper/generated/tables_ascii/Table1_dataset_summary.txt
-- CSV:    paper/generated/tables_csv/Table1_dataset_summary.csv
+- LaTeX:  paper/generated/tables/Table3_dataset_summary.tex
+- ASCII:  paper/generated/tables_ascii/Table3_dataset_summary.txt
+- CSV:    paper/generated/tables_csv/Table3_dataset_summary.csv
 
 Inputs (source of truth):
 - results/dataset_inventory.csv
@@ -258,17 +258,17 @@ def main() -> None:
     rows = build_rows(inv, stats)
 
     out_tex = (
-        repo_root / "paper" / "generated" / "tables" / "Table1_dataset_summary.tex"
+        repo_root / "paper" / "generated" / "tables" / "Table3_dataset_summary.tex"
     )
     out_txt = (
         repo_root
         / "paper"
         / "generated"
         / "tables_ascii"
-        / "Table1_dataset_summary.txt"
+        / "Table3_dataset_summary.txt"
     )
     out_csv = (
-        repo_root / "paper" / "generated" / "tables_csv" / "Table1_dataset_summary.csv"
+        repo_root / "paper" / "generated" / "tables_csv" / "Table3_dataset_summary.csv"
     )
 
     write_latex(rows, out_tex)
