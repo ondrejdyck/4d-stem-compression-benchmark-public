@@ -214,10 +214,8 @@ def create_chunking_comparison_plot(
 
     # Save figure
     output_path = Path(output_path)
-    plt.savefig(output_path.with_suffix(".png"), dpi=300, bbox_inches="tight")
-    plt.savefig(output_path.with_suffix(".svg"), bbox_inches="tight")
-    print(f"Saved: {output_path.with_suffix('.png')}")
-    print(f"Saved: {output_path.with_suffix('.svg')}")
+    plt.savefig(output_path.with_suffix(".pdf"), bbox_inches="tight")
+    print(f"Saved: {output_path.with_suffix('.pdf')}")
 
     return fig
 

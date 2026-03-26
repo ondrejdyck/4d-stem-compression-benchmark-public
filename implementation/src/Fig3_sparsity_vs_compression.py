@@ -161,13 +161,9 @@ def main():
     output_dir = repo_root / "paper" / "generated" / "figures"
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    output_png = output_dir / "Fig3_sparsity_vs_compression.png"
-    plt.savefig(output_png, dpi=300, bbox_inches="tight")
-    print(f"\n✓ Saved: {output_png}")
-
-    output_svg = output_dir / "Fig3_sparsity_vs_compression.svg"
-    plt.savefig(output_svg, bbox_inches="tight")
-    print(f"✓ Saved: {output_svg}")
+    output_pdf = output_dir / "Fig3_sparsity_vs_compression.pdf"
+    plt.savefig(output_pdf, bbox_inches="tight")
+    print(f"\n✓ Saved: {output_pdf}")
 
     print("\n✓ Figure 3 regenerated successfully!")
 

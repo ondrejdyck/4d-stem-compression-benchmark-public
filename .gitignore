@@ -18,3 +18,7 @@ PUBLIC_REPO_CLEANUP_NOTES.md
 # Local smoke-test outputs
 implementation/results/
 results/smoke_test_public/
+
+# Local arXiv submission staging area and bundle
+arxiv-src/
+arxiv-src.tar.gz

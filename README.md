@@ -27,6 +27,10 @@ See `implementation/README.md` for implementation-specific usage notes.
 For a no-data smoke test, run `python implementation/src/smoke_test_public.py`.
 The published figures and tables are generated deterministically from committed CSV outputs.
 
+## arXiv submission bundle
+
+Run `./prepare_arxiv_bundle.sh` to create a self-contained `arxiv-src/` staging directory and `arxiv-src.tar.gz` archive for submission. The staging directory is local-only and ignored by git.
+
 Typical setup:
 
 ```bash

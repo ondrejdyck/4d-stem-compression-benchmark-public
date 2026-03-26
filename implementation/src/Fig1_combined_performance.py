@@ -368,10 +368,8 @@ def create_combined_figure(df, output_path, top_n=10, use_aggregated=False):
 
     # Save figure
     output_path = Path(output_path)
-    plt.savefig(output_path.with_suffix(".png"), dpi=300, bbox_inches="tight")
-    plt.savefig(output_path.with_suffix(".svg"), bbox_inches="tight")
-    print(f"Saved: {output_path.with_suffix('.png')}")
-    print(f"Saved: {output_path.with_suffix('.svg')}")
+    plt.savefig(output_path.with_suffix(".pdf"), bbox_inches="tight")
+    print(f"Saved: {output_path.with_suffix('.pdf')}")
 
     plt.close()
 
@@ -422,7 +420,7 @@ def main():
     print("\n" + "=" * 70)
     print("FIGURE GENERATION COMPLETE")
     print("=" * 70)
-    print(f"\nOutput: {output_file}.png and {output_file}.svg")
+    print(f"\nOutput: {output_file}.pdf")
     print("\nFigure features:")
     print("  - Viridis color palette")
     print("  - Gray bars showing mean values across datasets")
@@ -431,7 +429,7 @@ def main():
         print("  - No error bars on panel A (compression is deterministic)")
     print("  - Large, readable fonts (18-24pt)")
     print("  - 3 panels stacked vertically")
-    print("  - Publication-quality 300 DPI PNG + vector SVG")
+    print("  - Publication-quality vector PDF")
 
 
 if __name__ == "__main__":

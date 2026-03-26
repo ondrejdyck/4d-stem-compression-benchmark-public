@@ -169,14 +169,9 @@ def create_radar_chart(df_balanced, output_dir):
 
     # Save figure
     plt.tight_layout()
-    output_file = output_dir / "Fig2_radar_chart.png"
-    plt.savefig(output_file, dpi=300, bbox_inches="tight")
+    output_file = output_dir / "Fig2_radar_chart.pdf"
+    plt.savefig(output_file, bbox_inches="tight")
     print(f"✓ Saved: {output_file}")
-
-    # Also save as SVG for editing in Inkscape
-    output_svg = output_dir / "Fig2_radar_chart.svg"
-    plt.savefig(output_svg, bbox_inches="tight")
-    print(f"✓ Saved: {output_svg}")
 
     plt.show()
 
