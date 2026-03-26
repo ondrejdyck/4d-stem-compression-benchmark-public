@@ -11,3 +11,10 @@ venv/
 
 # Benchmark outputs (keep results/ under version control)
 *.log
+
+# Local cleanup notes for repository polish
+PUBLIC_REPO_CLEANUP_NOTES.md
+
+# Local smoke-test outputs
+implementation/results/
+results/smoke_test_public/

@@ -6,8 +6,8 @@ Usage:
     python run_benchmark.py <dataset.emd> [--output results/] [--name dataset_name]
 
 Examples:
-    python run_benchmark.py ../data/4D_EELS.emd
-    python run_benchmark.py ../data/4D_Diff.emd --name 4D_Diff_test
+    python run_benchmark.py /path/to/dataset.emd
+    python run_benchmark.py /path/to/dataset.emd --name my_dataset
 """
 
 import argparse
@@ -112,9 +112,9 @@ Examples:
         print(f"  - Plot: compression_benchmark.png")
     print()
     print("Next steps:")
-    print("  1. Open notebooks/visualize_results.ipynb")
-    print("  2. Load the CSV file")
-    print("  3. Create custom plots")
+    print("  1. Inspect the CSV and metadata outputs")
+    print("  2. Generate figures/tables from implementation/src")
+    print("  3. Use the paper/generated artifacts as the public reference")
     print()
 
     return 0

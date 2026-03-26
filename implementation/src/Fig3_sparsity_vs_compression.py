@@ -10,15 +10,6 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from scipy.optimize import curve_fit
 
-# Dataset sparsity values (from DATASET_INVENTORY.md)
-DATASET_SPARSITY = {
-    "3D_EELS": 0.495,
-    "4D_EELS": 0.928,
-    "4D_Diff": 0.747,
-    "4D_Diff-2x2-binning": 0.709,
-    "4D_Diff-4x4-binning": 0.609,
-}
-
 
 def shannon_entropy_limit(sparsity):
     """Calculate sparsity-only (binary entropy) compression upper bound.
@@ -42,26 +33,28 @@ def main():
     script_dir = Path(__file__).parent
     repo_root = script_dir.parent.parent
     stats_file = repo_root / "results" / "aggregated" / "statistics.csv"
+    inv_file = repo_root / "results" / "dataset_inventory.csv"
     df = pd.read_csv(stats_file)
+    inv = pd.read_csv(inv_file)[["dataset_id", "sparsity_fraction"]].rename(
+        columns={"dataset_id": "dataset", "sparsity_fraction": "sparsity"}
+    )
 
-    # Get best compression for each dataset
-    datasets = [
-        "3D_EELS",
-        "4D_EELS",
-        "4D_Diff",
-        "4D_Diff-2x2-binning",
-        "4D_Diff-4x4-binning",
-    ]
+    # Get best compression for each dataset using committed CSV sources
     sparsity = []
     compression = []
+    datasets = []
 
-    for dataset in datasets:
+    for _, row in inv.sort_values("sparsity", ascending=True).iterrows():
+        dataset = row["dataset"]
         dataset_df = df[df["dataset"] == dataset]
+        if dataset_df.empty:
+            raise ValueError(f"No aggregated statistics found for dataset={dataset}")
         best_compression = dataset_df["compression_ratio_mean"].max()
         compression.append(best_compression)
-        sparsity.append(DATASET_SPARSITY[dataset])
+        sparsity.append(float(row["sparsity"]))
+        datasets.append(dataset)
         print(
-            f"{dataset}: sparsity={DATASET_SPARSITY[dataset]:.3f}, compression={best_compression:.2f}×"
+            f"{dataset}: sparsity={float(row['sparsity']):.3f}, compression={best_compression:.2f}×"
         )
 
     # Fit power law

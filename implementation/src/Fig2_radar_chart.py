@@ -8,7 +8,7 @@ Creates a radar chart comparing compression algorithms across three key metrics:
 - Read throughput
 
 Usage:
-    python plot_radar_chart.py [--output OUTPUT_DIR]
+    python Fig2_radar_chart.py [--output OUTPUT_DIR]
 """
 
 import pandas as pd

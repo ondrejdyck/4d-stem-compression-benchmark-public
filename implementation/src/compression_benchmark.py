@@ -747,27 +747,38 @@ def run_benchmark(
 
 
 def main():
-    """Main benchmarking function - loads default dataset and runs benchmark"""
+    """Main benchmarking function - loads the default local dataset or smoke fixture."""
     print("4D STEM Data Compression Benchmark")
     print("=" * 50)
 
     # Setup - use relative paths from implementation directory
     data_dir = Path(__file__).parent.parent / "data"
+    fixture_dir = Path(__file__).parent.parent / "fixtures"
     output_dir = Path(__file__).parent.parent / "results"
 
-    # Load the smaller EMD dataset for testing
+    # Load the default EMD dataset if available; otherwise fall back to the
+    # bundled synthetic smoke fixture so the public repo still runs end-to-end.
     emd_file = data_dir / "4D_EELS.emd"
+    if not emd_file.exists():
+        emd_file = fixture_dir / "smoke_test.emd"
 
     if not emd_file.exists():
         print(f"ERROR: Could not find {emd_file}")
         print(f"Looking in: {data_dir.absolute()}")
+        print(f"Also checked: {fixture_dir.absolute()}")
         print("\nAvailable files:")
         if data_dir.exists():
             for f in data_dir.glob("*.emd"):
                 print(f"  {f.name}")
+        if fixture_dir.exists():
+            for f in fixture_dir.glob("*.emd"):
+                print(f"  {f.name}")
         return
 
     print(f"Loading: {emd_file.name}")
+    dataset_name = "4D_EELS" if emd_file.parent == data_dir else "smoke_test"
+    if emd_file.parent == fixture_dir:
+        print("Using bundled smoke fixture.")
     print("This may take a moment...")
 
     # Load data
@@ -778,7 +789,7 @@ def main():
     print(f"Loaded in {load_time:.1f}s")
 
     # Run benchmark using the new function
-    results = run_benchmark(data_4d, output_dir, dataset_name="4D_EELS")
+    results = run_benchmark(data_4d, output_dir, dataset_name=dataset_name)
 
 
 if __name__ == "__main__":

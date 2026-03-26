@@ -10,7 +10,7 @@ Creates a 3-panel figure stacked vertically showing:
 Uses the same style as individual cross-dataset plots (viridis colors, gray mean bars).
 
 Usage:
-    python plot_combined_performance.py
+    python Fig1_combined_performance.py
 """
 
 import numpy as np
@@ -61,24 +61,15 @@ def create_panel(
 
     # Get unique datasets and their sparsity
     if use_aggregated:
-        # Aggregated data doesn't have sparsity column, need to load from individual dataset metadata
-        import json
-
-        results_dir = Path(__file__).parent.parent.parent / "results"
-        sparsity_map = {}
-
-        for dataset in df["dataset"].unique():
-            metadata_file = results_dir / dataset / "metadata.json"
-            if metadata_file.exists():
-                with open(metadata_file) as f:
-                    meta = json.load(f)
-                    sparsity_map[dataset] = meta["sparsity"]
-            else:
-                # Fallback: try to infer from dataset name or use 0
-                sparsity_map[dataset] = 0.0
-
-        dataset_info = df.groupby("dataset").agg({metric_col: "mean"}).reset_index()
-        dataset_info["sparsity"] = dataset_info["dataset"].map(sparsity_map)
+        if "sparsity" in df.columns:
+            dataset_info = (
+                df.groupby("dataset")
+                .agg({metric_col: "mean", "sparsity": "first"})
+                .reset_index()
+            )
+        else:
+            dataset_info = df.groupby("dataset").agg({metric_col: "mean"}).reset_index()
+            dataset_info["sparsity"] = 0.0
     else:
         dataset_info = (
             df.groupby("dataset")
@@ -395,6 +386,13 @@ def main():
     output_dir.mkdir(parents=True, exist_ok=True)
     output_file = output_dir / "Fig1_combined_performance"
 
+    # Load dataset inventory for sparsity labels (public, CSV-based source of truth)
+    inventory_file = repo_root / "results" / "dataset_inventory.csv"
+    inventory = pd.read_csv(inventory_file)[["dataset_id", "sparsity_fraction"]]
+    inventory = inventory.rename(
+        columns={"dataset_id": "dataset", "sparsity_fraction": "sparsity"}
+    )
+
     # Check if aggregated statistics are available
     aggregated_file = results_dir / "aggregated" / "statistics.csv"
     use_aggregated = aggregated_file.exists()
@@ -404,6 +402,10 @@ def main():
         df = load_and_process(
             results_dir, chunking_type="balanced", normalize=False, use_aggregated=True
         )
+        df = df.merge(inventory, on="dataset", how="left", suffixes=("", "_inv"))
+        if "sparsity_inv" in df.columns:
+            df["sparsity"] = df["sparsity"].fillna(df["sparsity_inv"])
+            df = df.drop(columns=["sparsity_inv"])
         print(
             f"Loaded {len(df)} aggregated results from {df['dataset'].nunique()} datasets"
         )
