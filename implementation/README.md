@@ -18,7 +18,7 @@ This directory contains the code used to generate the paper artifacts and to run
 
 The public repo does not include raw benchmark datasets. The benchmark scripts expect local `.emd` files when run against real data.
 
-For the original study, datasets were stored under `implementation/data/`.
+For the original study, raw datasets were stored locally and are not included here.
 
 The committed `results/` CSV files are sufficient to regenerate the paper tables and figures.
 
@@ -38,7 +38,7 @@ python src/run_all_benchmarks.py --data-dir /path/to/data --yes
 
 Generate paper tables/figures from existing results:
 
-These commands are deterministic and operate only on the committed CSV outputs.
+These commands are deterministic when run against the committed CSV outputs.
 
 ```bash
 python src/paper_artifacts/datasets/build_dataset_inventory.py --data-dir /path/to/data
@@ -50,5 +50,10 @@ python src/Fig2_radar_chart.py
 python src/Fig1_combined_performance.py
 python src/Fig4_chunking_comparison.py
 python src/Fig3_sparsity_vs_compression.py
+```
+
+Smoke test the public workflow without raw data:
+
+```bash
 python src/smoke_test_public.py
 ```
