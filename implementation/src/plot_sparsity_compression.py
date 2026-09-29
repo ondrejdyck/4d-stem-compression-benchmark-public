@@ -1,14 +1,35 @@
 #!/usr/bin/env python3
 """
-Regenerate Figure 3 (Sparsity vs Compression) with correct power-law equation
-Uses aggregated statistics from 10-run benchmarks
+Figure 3: sparsity against compression ratio.
+
+Shows the three datasets stored as uint16 only. The binned datasets are stored
+as float32; compression ratio is not comparable across container widths, and the
+16-bit binary-entropy bound does not govern them.
+
+Usage:
+    uv run python implementation/src/plot_sparsity_compression.py
 """
 
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
-from scipy.optimize import curve_fit
+
+# Embed TrueType rather than matplotlib's default Type 3 fonts. Type 3 is
+# rejected by several journals' production systems and carries no ToUnicode
+# map, so text in the figure cannot be selected, searched or read aloud.
+plt.rcParams["pdf.fonttype"] = 42
+plt.rcParams["ps.fonttype"] = 42
+
+
+# Dataset sparsity values (from DATASET_INVENTORY.md)
+DATASET_SPARSITY = {
+    "3D_EELS": 0.495,
+    "4D_EELS": 0.928,
+    "4D_Diff": 0.747,
+    "4D_Diff-2x2-binning": 0.709,
+    "4D_Diff-4x4-binning": 0.609,
+}
 
 
 def shannon_entropy_limit(sparsity):
@@ -22,53 +43,32 @@ def shannon_entropy_limit(sparsity):
     return 16 / H2
 
 
-def power_law(s, a, b, c):
-    """Power law function: C = a * s^b + c"""
-    return a * s**b + c
-
-
 def main():
     # Load aggregated statistics
-    # Auto-detect paths relative to this script location
     script_dir = Path(__file__).parent
     repo_root = script_dir.parent.parent
     stats_file = repo_root / "results" / "aggregated" / "statistics.csv"
-    inv_file = repo_root / "results" / "dataset_inventory.csv"
     df = pd.read_csv(stats_file)
-    inv = pd.read_csv(inv_file)[["dataset_id", "sparsity_fraction"]].rename(
-        columns={"dataset_id": "dataset", "sparsity_fraction": "sparsity"}
-    )
 
-    # Get best compression for each dataset using committed CSV sources
+    # Get best compression for each dataset
+    # uint16 datasets only -- see module docstring
+    datasets = [
+        "3D_EELS",
+        "4D_EELS",
+        "4D_Diff",
+    ]
     sparsity = []
     compression = []
-    datasets = []
 
-    for _, row in inv.sort_values("sparsity", ascending=True).iterrows():
-        dataset = row["dataset"]
+    for dataset in datasets:
         dataset_df = df[df["dataset"] == dataset]
-        if dataset_df.empty:
-            raise ValueError(f"No aggregated statistics found for dataset={dataset}")
         best_compression = dataset_df["compression_ratio_mean"].max()
         compression.append(best_compression)
-        sparsity.append(float(row["sparsity"]))
-        datasets.append(dataset)
+        sparsity.append(DATASET_SPARSITY[dataset])
         print(
-            f"{dataset}: sparsity={float(row['sparsity']):.3f}, compression={best_compression:.2f}×"
+            f"{dataset}: sparsity={DATASET_SPARSITY[dataset]:.3f}, compression={best_compression:.2f}×"
         )
 
-    # Fit power law
-    params, _ = curve_fit(power_law, sparsity, compression, p0=[50, 7, 5])
-    a, b, c = params
-
-    # Calculate R²
-    residuals = np.array(compression) - power_law(np.array(sparsity), *params)
-    ss_res = np.sum(residuals**2)
-    ss_tot = np.sum((np.array(compression) - np.mean(compression)) ** 2)
-    r_squared = 1 - (ss_res / ss_tot)
-
-    print(f"\nPower law fit: C = {a:.1f} × s^{b:.2f} + {c:.1f}")
-    print(f"R² = {r_squared:.3f}")
 
     # Create figure
     fig, ax = plt.subplots(figsize=(10, 7))
@@ -80,27 +80,26 @@ def main():
         s_theory * 100, c_theory, "k--", linewidth=3, alpha=0.5, zorder=1
     )[0]
 
-    # Plot power law fit
-    s_fit = np.linspace(min(sparsity), max(sparsity), 100)
-    c_fit = power_law(s_fit, *params)
-    powerlaw_line = ax.plot(s_fit * 100, c_fit, "r-", linewidth=3.5, zorder=2)[0]
-
-    # Plot data points
-    colors = plt.cm.viridis(np.linspace(0, 1, len(sparsity)))
+    # Plot data points.
+    # Colours must match Figure 1, which assigns viridis(0.2..0.9) across ALL FIVE
+    # datasets ordered by descending sparsity. We select the entries for the three
+    # datasets shown here so a dataset keeps its colour between figures.
+    _all_by_sparsity = sorted(DATASET_SPARSITY, key=DATASET_SPARSITY.get, reverse=True)
+    _ramp = plt.cm.viridis(np.linspace(0.2, 0.9, len(_all_by_sparsity)))
+    _colour_of = dict(zip(_all_by_sparsity, _ramp))
+    colors = [_colour_of[d] for d in datasets]
     legend_labels = [
         "3D EELS",
         "4D EELS",
         "4D Diff.",
-        "4D Diff. (2×2 bin)",
-        "4D Diff. (4×4 bin)",
     ]
 
-    for i, (s, c, color, label) in enumerate(
+    for i, (s_i, c_i, color, label) in enumerate(
         zip(sparsity, compression, colors, legend_labels)
     ):
         ax.scatter(
-            s * 100,
-            c,
+            s_i * 100,
+            c_i,
             s=400,
             c=[color],
             edgecolors="black",
@@ -124,13 +123,10 @@ def main():
     ax.set_xlim(45, 95)
     ax.set_ylim(0, max(compression) * 1.1)
 
-    # Legend 1 (upper left): sparsity-only upper bound and power-law fit
+    # Legend 1 (upper left): sparsity-only upper bound
     legend1 = ax.legend(
-        [shannon_line, powerlaw_line],
-        [
-            "Binary-entropy upper bound (sparsity-only)",
-            f"Power Law Fit: $C = {a:.1f} \\cdot s^{{{b:.2f}}} + {c:.1f}$ (R² = {r_squared:.3f})",
-        ],
+        [shannon_line],
+        ["Binary-entropy upper bound (sparsity-only)"],
         loc="upper left",
         fontsize=16,
         framealpha=0.95,
