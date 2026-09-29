@@ -412,7 +412,7 @@ def main():
     results_dir = script_dir.parent.parent / "results"
     output_dir = script_dir.parent.parent / "paper" / "generated" / "figures"
     output_dir.mkdir(parents=True, exist_ok=True)
-    output_file = output_dir / "figure_4"
+    output_file = output_dir / "figure_3"
 
     print("Loading benchmark results...")
     df, use_aggregated = load_results(results_dir)

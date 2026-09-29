@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Figure 3: sparsity against compression ratio.
+Figure 4: sparsity against compression ratio.
 
 Shows the three datasets stored as uint16 only. The binned datasets are stored
 as float32; compression ratio is not comparable across container widths, and the
@@ -154,14 +154,16 @@ def main():
     # Save figure
     plt.tight_layout()
 
+    # This repository publishes one vector artifact per figure. The manuscript
+    # repository additionally writes PNG and SVG; neither is needed here.
     output_dir = repo_root / "paper" / "generated" / "figures"
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    output_pdf = output_dir / "figure_3.pdf"
+    output_pdf = output_dir / "figure_4.pdf"
     plt.savefig(output_pdf, bbox_inches="tight")
     print(f"\n✓ Saved: {output_pdf}")
 
-    print("\n✓ Figure 3 regenerated successfully!")
+    print("\n✓ Figure 4 regenerated successfully!")
 
 
 if __name__ == "__main__":
