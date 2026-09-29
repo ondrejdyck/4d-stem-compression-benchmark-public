@@ -4,9 +4,9 @@
 This script produces the chunking strategy summary table (manuscript label
 \\label{tab:chunking_summary}) in three synchronized formats:
 
-- LaTeX:  paper/generated/tables/Table5_chunking_summary.tex
-- ASCII:  paper/generated/tables_ascii/Table5_chunking_summary.txt
-- CSV:    paper/generated/tables_csv/Table5_chunking_summary.csv
+- LaTeX:  paper/generated/tables/table_chunking_summary.tex
+- ASCII:  paper/generated/tables_ascii/table_chunking_summary.txt
+- CSV:    paper/generated/tables_csv/table_chunking_summary.csv
 
 Inputs (source of truth):
 - results/aggregated/statistics.csv
@@ -197,17 +197,17 @@ def main() -> None:
     rows = compute_rows(stats)
 
     out_tex = (
-        repo_root / "paper" / "generated" / "tables" / "Table5_chunking_summary.tex"
+        repo_root / "paper" / "generated" / "tables" / "table_chunking_summary.tex"
     )
     out_txt = (
         repo_root
         / "paper"
         / "generated"
         / "tables_ascii"
-        / "Table5_chunking_summary.txt"
+        / "table_chunking_summary.txt"
     )
     out_csv = (
-        repo_root / "paper" / "generated" / "tables_csv" / "Table5_chunking_summary.csv"
+        repo_root / "paper" / "generated" / "tables_csv" / "table_chunking_summary.csv"
     )
 
     write_latex(rows, out_tex)

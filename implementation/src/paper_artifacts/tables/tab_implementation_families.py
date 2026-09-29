@@ -5,9 +5,9 @@ This script reproduces the manuscript table labeled:
   \\label{tab:algorithm_families}
 
 Outputs (synchronized):
-- LaTeX:  paper/generated/tables/Table4_implementation_families.tex
-- ASCII:  paper/generated/tables_ascii/Table4_implementation_families.txt
-- CSV:    paper/generated/tables_csv/Table4_implementation_families.csv
+- LaTeX:  paper/generated/tables/table_implementation_families.tex
+- ASCII:  paper/generated/tables_ascii/table_implementation_families.txt
+- CSV:    paper/generated/tables_csv/table_implementation_families.csv
 
 Input (source of truth):
 - results/aggregated/statistics.csv
@@ -180,21 +180,21 @@ def main() -> None:
         / "paper"
         / "generated"
         / "tables"
-        / "Table4_implementation_families.tex"
+        / "table_implementation_families.tex"
     )
     out_txt = (
         repo_root
         / "paper"
         / "generated"
         / "tables_ascii"
-        / "Table4_implementation_families.txt"
+        / "table_implementation_families.txt"
     )
     out_csv = (
         repo_root
         / "paper"
         / "generated"
         / "tables_csv"
-        / "Table4_implementation_families.csv"
+        / "table_implementation_families.csv"
     )
 
     write_latex(rows, out_tex)

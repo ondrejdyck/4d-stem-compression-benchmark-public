@@ -161,7 +161,7 @@ def main():
     output_dir = repo_root / "paper" / "generated" / "figures"
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    output_pdf = output_dir / "Fig3_sparsity_vs_compression.pdf"
+    output_pdf = output_dir / "figure_3.pdf"
     plt.savefig(output_pdf, bbox_inches="tight")
     print(f"\n✓ Saved: {output_pdf}")
 

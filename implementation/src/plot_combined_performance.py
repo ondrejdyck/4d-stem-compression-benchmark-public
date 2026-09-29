@@ -10,7 +10,7 @@ Creates a 3-panel figure stacked vertically showing:
 Uses the same style as individual cross-dataset plots (viridis colors, gray mean bars).
 
 Usage:
-    python Fig1_combined_performance.py
+    python plot_combined_performance.py
 """
 
 import numpy as np
@@ -382,7 +382,7 @@ def main():
     results_dir = repo_root / "results"
     output_dir = repo_root / "paper" / "generated" / "figures"
     output_dir.mkdir(parents=True, exist_ok=True)
-    output_file = output_dir / "Fig1_combined_performance"
+    output_file = output_dir / "figure_1"
 
     # Load dataset inventory for sparsity labels (public, CSV-based source of truth)
     inventory_file = repo_root / "results" / "dataset_inventory.csv"

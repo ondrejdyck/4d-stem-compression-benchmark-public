@@ -404,7 +404,7 @@ def main():
     results_dir = repo_root / "results"
     output_dir = repo_root / "paper" / "generated" / "figures"
     output_dir.mkdir(parents=True, exist_ok=True)
-    output_file = output_dir / "Fig4_chunking_comparison"
+    output_file = output_dir / "figure_4"
 
     print("Loading benchmark results...")
     df, use_aggregated = load_results(results_dir)

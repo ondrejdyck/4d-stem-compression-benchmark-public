@@ -42,14 +42,14 @@ These commands are deterministic when run against the committed CSV outputs.
 
 ```bash
 python src/paper_artifacts/datasets/build_dataset_inventory.py --data-dir /path/to/data
-python src/paper_artifacts/tables/Tab1_datasets.py
-python src/paper_artifacts/tables/Tab3_dataset_summary.py
-python src/paper_artifacts/tables/Tab4_implementation_families.py
-python src/paper_artifacts/tables/Tab5_chunking_summary.py
-python src/Fig2_radar_chart.py
-python src/Fig1_combined_performance.py
-python src/Fig4_chunking_comparison.py
-python src/Fig3_sparsity_vs_compression.py
+python src/paper_artifacts/tables/tab_methods_datasets.py
+python src/paper_artifacts/tables/tab_dataset_summary.py
+python src/paper_artifacts/tables/tab_implementation_families.py
+python src/paper_artifacts/tables/tab_chunking_summary.py
+python src/plot_radar_chart.py
+python src/plot_combined_performance.py
+python src/plot_chunking_comparison.py
+python src/plot_sparsity_compression.py
 ```
 
 Smoke test the public workflow without raw data:

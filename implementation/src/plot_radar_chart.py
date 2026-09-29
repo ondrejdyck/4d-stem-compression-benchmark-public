@@ -8,7 +8,7 @@ Creates a radar chart comparing compression algorithms across three key metrics:
 - Read throughput
 
 Usage:
-    python Fig2_radar_chart.py [--output OUTPUT_DIR]
+    python plot_radar_chart.py [--output OUTPUT_DIR]
 """
 
 import pandas as pd
@@ -169,7 +169,7 @@ def create_radar_chart(df_balanced, output_dir):
 
     # Save figure
     plt.tight_layout()
-    output_file = output_dir / "Fig2_radar_chart.pdf"
+    output_file = output_dir / "figure_2.pdf"
     plt.savefig(output_file, bbox_inches="tight")
     print(f"✓ Saved: {output_file}")
 
