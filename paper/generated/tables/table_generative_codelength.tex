@@ -1,0 +1,17 @@
+\begin{table}[h]
+\centering
+\caption{What it costs to store the simulated datacube of Figure~\ref{fig:4d_dataset}, against what it cost to generate it. A representation that makes an assertion about the world can be false. The model-based reduction makes a claim about the specimen rather than the data; the other rows report data-derived quantities. Section~\ref{sec:coarsening} develops the distinction. How each entry was computed is given in Supporting Information Section~S2.}
+\label{tab:generative}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lrrll}
+\hline
+Representation & Size & Reduction & Recovers & Asserts \\
+\hline
+Raw datacube (uint8) & 388.2~MiB & --- & --- & --- \\
+Blosc Zstd, balanced chunks & 4.6~MiB & 84$\times$ & exactly & nothing \\
+Model-based code, counts retained & 1.8~MiB & 210$\times$ & exactly & nothing \\
+ADF image (float32) & 64.0~KiB & 6,211$\times$ & not at all & nothing \\
+Model-based reduction, counts discarded & 347~B & 1,172,991$\times$ & not at all & the specimen \\
+\hline
+\end{tabular}
+\end{table}

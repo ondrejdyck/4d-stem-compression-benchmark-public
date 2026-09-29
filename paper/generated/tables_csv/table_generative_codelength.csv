@@ -1,0 +1,6 @@
+label,bytes,ratio,recovers,asserts
+Raw datacube (uint8),407027712,1.0,---,---
+"Blosc Zstd, balanced chunks",4841476,84.07099653081002,exactly,nothing
+"Model-based code, counts retained",1938693,209.94955982452677,exactly,nothing
+ADF image (float32),65536,6210.75,not at all,nothing
+"Model-based reduction, counts discarded",347,1172990.5244956773,not at all,the specimen

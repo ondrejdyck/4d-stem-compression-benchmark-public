@@ -1,0 +1,14 @@
+Representation                                      Bytes   Reduction  Recovers  Asserts       
+-----------------------------------------------------------------------------------------------
+Raw datacube (uint8)                          407,027,712         ---  ---       ---           
+Blosc Zstd, balanced chunks                     4,841,476         84x  exactly   nothing       
+Model-based code, counts retained               1,938,693        210x  exactly   nothing       
+ADF image (float32)                                65,536      6,211x  not at allnothing       
+Model-based reduction, counts discarded               347  1,172,991x  not at allthe specimen  
+
+specimen parameters:   153 B  {"a_A":3.28,"compound":"WSe2","layers":1,"polytype":"2H","repeats":[3,6],"se_se_A":3.34,"supercell":[[-2,-1,0],[0,-1,0],[0,0,1]],"vacuum_per_side_A":2.0}
+instrument parameters: 194 B  {"alpha_rad":0.03,"current_A":6e-11,"dwell_s":1e-06,"n_slices":16,"phonon_configs":16,"phonon_sigma_A":0.09,"real_grid":[221,255],"scan_shape":[128,128],"theta_max_rad":0.18,"voltage_V":80000.0}
+
+ideal code length, expected : 1,938,754 B
+ideal code length, this draw: 1,938,346 B
+  agreement: 2.11e-04

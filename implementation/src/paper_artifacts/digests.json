@@ -1,0 +1,15 @@
+{
+  "comment": "SHA-256 over each array's raw bytes, C-contiguous. Written by verify_reproduction.py --write; regenerate only when the dataset is deliberately reissued.",
+  "dataset": "wse2_pristine_128x128_374e.npz",
+  "arrays": {
+    "counts": "d01a89229c8583f47abfe8d51463dd1a931a1d384efd0eb1e2bbfdc9321dc988",
+    "pattern_lambda": "44f50fa1e308416bf1f44f4c1dc488ce78d217a0eccc95a8665e5ae407c91720",
+    "pattern_counts": "8732c1e44660d380e65261b34f650418f10a0b06d7d1fa03c95536edfee79f20",
+    "adf_from_lambda": "ec9d51db8f5412fa33aa98f56647f4fac6710b12f0f1c7ac314913580dfb3215",
+    "adf_from_counts": "3e4689f4b7e6f44ecdfd39dd3faa553f1313adea914f07d92eef1ba42df5163f",
+    "bf_from_lambda": "48ba91d91f9fb0c1bfba4e8c612a52f291522742b21ae227cf3bffd90d8141f3",
+    "bf_from_counts": "364eba7e90baf69d9f672e78e48dfc952946f4201312a1a802e9f080e123df76",
+    "atom_positions": "b2a5a3c5bfcdba087645f34598539f0db94240fdc10d66fc72cfb351b6e7d447",
+    "atom_species": "5e86b241cc7f95708c913347e2abd2476b794080f7b2cb895dc9ae4814100894"
+  }
+}
