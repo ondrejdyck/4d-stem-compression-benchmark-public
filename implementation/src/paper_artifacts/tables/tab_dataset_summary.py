@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""Generate the dataset summary table in LaTeX/ASCII/CSV.
+"""Generate Results dataset-summary table (Table 3) in LaTeX/ASCII/CSV.
 
-This script updates the public-release "version-of-record" artifacts:
+This script produces the dataset summary table in three synchronized formats:
 
 - LaTeX:  paper/generated/tables/table_dataset_summary.tex
 - ASCII:  paper/generated/tables_ascii/table_dataset_summary.txt
 - CSV:    paper/generated/tables_csv/table_dataset_summary.csv
 
 Inputs (source of truth):
-- results/dataset_inventory.csv
-- results/aggregated/statistics.csv
+- results/dataset_inventory.csv (computed from local EMD files)
+- results/aggregated/statistics.csv (10-run aggregated benchmark results)
 
 Notes
 -----
@@ -44,7 +44,13 @@ class Row:
     file_size_mib: float
 
 
+# Note: aggregated statistics.csv stores compressed sizes in a column named
+# `file_size_mb_mean`, but those values are computed using 1024^2 bytes and are
+# therefore MiB. We preserve the upstream column name but label outputs as MiB.
+
+
 def _repo_root_from_script(script_path: Path) -> Path:
+    # .../implementation/src/paper_artifacts/tables/tab_dataset_summary.py
     return script_path.resolve().parents[4]
 
 
@@ -62,6 +68,8 @@ def _chunk_display(chunk: str) -> str:
 
 
 def _format_impl(method: str) -> str:
+    """Format stats.csv method name for the manuscript Implementation column."""
+
     if method.startswith("balanced_"):
         impl = method[len("balanced_") :]
         return _latex_escape(impl)
@@ -76,13 +84,8 @@ def _format_impl(method: str) -> str:
         impl = method[len("single_frame_") :]
         return f"{_latex_escape(impl)} ({_chunk_display(chunk)})"
 
+    # Fallback for methods without chunking prefix (e.g., sparse/custom)
     return _latex_escape(method)
-
-
-def _format_size_for_table(size_gib: float) -> str:
-    if size_gib < 0.1:
-        return f"{size_gib:.3f}"
-    return f"{size_gib:.1f}"
 
 
 def build_rows(dataset_inventory: pd.DataFrame, stats: pd.DataFrame) -> list[Row]:
@@ -124,40 +127,38 @@ def build_rows(dataset_inventory: pd.DataFrame, stats: pd.DataFrame) -> list[Row
     return rows
 
 
-def write_latex(rows: list[Row], out_path: Path) -> None:
+def write_csv_out(rows: list[Row], out_path: Path) -> None:
     out_path.parent.mkdir(parents=True, exist_ok=True)
-
-    lines: list[str] = []
-    lines.append("\\begin{table}[h]")
-    lines.append("\\centering")
-    lines.append(
-        "\\caption{Dataset characteristics and best compression performance achieved. Chunking strategy is specified in parentheses where it differs from balanced.}"
-    )
-    lines.append("\\label{tab:dataset_summary}")
-    lines.append("\\begin{tabular}{lrrrll}")
-    lines.append("\\hline")
-    lines.append(
-        "Dataset & Size (GiB) & Sparsity (\\%) & Best Ratio & Implementation & File Size (MiB) \\\\"
-    )
-    lines.append("\\hline")
-
-    for r in rows:
-        dataset = _latex_escape(r.dataset)
-        size = _format_size_for_table(r.size_gib)
-        sparsity = f"{r.sparsity_pct:.1f}"
-        ratio = f"{r.best_ratio:.1f}$\\times$"
-        impl = r.implementation_display
-        file_mib = f"{r.file_size_mib:.1f}"
-        lines.append(
-            f"{dataset} & {size} & {sparsity} & {ratio} & {impl} & {file_mib} \\\\"
+    with out_path.open("w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(
+            [
+                "dataset",
+                "size_gib",
+                "sparsity_pct",
+                "best_ratio",
+                "implementation",
+                "file_size_mib",
+            ]
         )
+        for r in rows:
+            w.writerow(
+                [
+                    r.dataset,
+                    f"{r.size_gib:.6f}",
+                    f"{r.sparsity_pct:.3f}",
+                    f"{r.best_ratio:.6f}",
+                    r.implementation_display.replace("\\_", "_"),
+                    f"{r.file_size_mib:.6f}",
+                ]
+            )
 
-    lines.append("\\hline")
-    lines.append("\\end{tabular}")
-    lines.append("\\end{table}")
-    lines.append("")
 
-    out_path.write_text("\n".join(lines), encoding="utf-8")
+def _format_size_for_table(size_gib: float) -> str:
+    # Match manuscript style: show 1 decimal for >=0.1, else 0.008, etc.
+    if size_gib < 0.1:
+        return f"{size_gib:.3f}"
+    return f"{size_gib:.1f}"
 
 
 def write_ascii(rows: list[Row], out_path: Path) -> None:
@@ -202,31 +203,40 @@ def write_ascii(rows: list[Row], out_path: Path) -> None:
     out_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-def write_csv_out(rows: list[Row], out_path: Path) -> None:
+def write_latex(rows: list[Row], out_path: Path) -> None:
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    with out_path.open("w", newline="", encoding="utf-8") as f:
-        w = csv.writer(f)
-        w.writerow(
-            [
-                "dataset",
-                "size_gib",
-                "sparsity_pct",
-                "best_ratio",
-                "implementation",
-                "file_size_mib",
-            ]
+
+    lines: list[str] = []
+    lines.append("\\begin{table}[h]")
+    lines.append("\\centering")
+    lines.append(
+        "\\caption{Dataset characteristics and best compression performance achieved. Chunking strategy is specified in parentheses where it differs from balanced.}"
+    )
+    lines.append("\\label{tab:dataset_summary}")
+    lines.append("\\begin{tabular}{lrrrll}")
+    lines.append("\\hline")
+    lines.append(
+        "Dataset & Size (GiB) & Sparsity (\\%) & Best Ratio & Implementation & File Size (MiB) \\\\"
+    )
+    lines.append("\\hline")
+
+    for r in rows:
+        dataset = _latex_escape(r.dataset)
+        size = _format_size_for_table(r.size_gib)
+        sparsity = f"{r.sparsity_pct:.1f}"
+        ratio = f"{r.best_ratio:.1f}$\\times$"
+        impl = r.implementation_display
+        file_mib = f"{r.file_size_mib:.1f}"
+        lines.append(
+            f"{dataset} & {size} & {sparsity} & {ratio} & {impl} & {file_mib} \\\\"
         )
-        for r in rows:
-            w.writerow(
-                [
-                    r.dataset,
-                    f"{r.size_gib:.6f}",
-                    f"{r.sparsity_pct:.3f}",
-                    f"{r.best_ratio:.6f}",
-                    r.implementation_display.replace("\\_", "_"),
-                    f"{r.file_size_mib:.6f}",
-                ]
-            )
+
+    lines.append("\\hline")
+    lines.append("\\end{tabular}")
+    lines.append("\\end{table}")
+    lines.append("")
+
+    out_path.write_text("\n".join(lines), encoding="utf-8")
 
 
 def main() -> None:
@@ -255,17 +265,12 @@ def main() -> None:
 
     inv = pd.read_csv(inv_path)
     stats = pd.read_csv(stats_path)
+
     rows = build_rows(inv, stats)
 
-    out_tex = (
-        repo_root / "paper" / "generated" / "tables" / "table_dataset_summary.tex"
-    )
+    out_tex = repo_root / "paper" / "generated" / "tables" / "table_dataset_summary.tex"
     out_txt = (
-        repo_root
-        / "paper"
-        / "generated"
-        / "tables_ascii"
-        / "table_dataset_summary.txt"
+        repo_root / "paper" / "generated" / "tables_ascii" / "table_dataset_summary.txt"
     )
     out_csv = (
         repo_root / "paper" / "generated" / "tables_csv" / "table_dataset_summary.csv"
@@ -275,7 +280,7 @@ def main() -> None:
     write_ascii(rows, out_txt)
     write_csv_out(rows, out_csv)
 
-    print("✓ Generated public dataset summary table outputs:")
+    print("✓ Generated dataset summary table outputs:")
     print(f"  LaTeX: {out_tex}")
     print(f"  ASCII: {out_txt}")
     print(f"  CSV:   {out_csv}")

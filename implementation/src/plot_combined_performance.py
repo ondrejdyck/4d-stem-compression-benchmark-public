@@ -19,6 +19,13 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 import sys
 
+# Embed TrueType rather than matplotlib's default Type 3 fonts. Type 3 is
+# rejected by several journals' production systems and carries no ToUnicode
+# map, so text in the figure cannot be selected, searched or read aloud.
+plt.rcParams["pdf.fonttype"] = 42
+plt.rcParams["ps.fonttype"] = 42
+
+
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent))
 from data_loader import load_and_process, get_error_bars
@@ -61,15 +68,34 @@ def create_panel(
 
     # Get unique datasets and their sparsity
     if use_aggregated:
-        if "sparsity" in df.columns:
-            dataset_info = (
-                df.groupby("dataset")
-                .agg({metric_col: "mean", "sparsity": "first"})
-                .reset_index()
-            )
-        else:
-            dataset_info = df.groupby("dataset").agg({metric_col: "mean"}).reset_index()
-            dataset_info["sparsity"] = 0.0
+        # Aggregated data doesn't have sparsity column, need to load from individual dataset metadata
+        import json
+
+        results_dir = Path(__file__).parent.parent.parent / "results"
+        sparsity_map = {}
+
+        for dataset in df["dataset"].unique():
+            metadata_file = results_dir / dataset / "metadata.json"
+            if metadata_file.exists():
+                with open(metadata_file) as f:
+                    sparsity_map[dataset] = json.load(f)["sparsity"]
+
+        # Per-dataset metadata.json is written by the benchmark and is not part of
+        # the published artifact set. dataset_inventory.csv carries the same
+        # sparsity and is published, so fall back to it.
+        if not sparsity_map:
+            inventory = results_dir / "dataset_inventory.csv"
+            if inventory.exists():
+                import csv as _csv
+                with open(inventory) as f:
+                    for row in _csv.DictReader(f):
+                        sparsity_map[row["dataset_id"]] = float(row["sparsity_fraction"])
+            else:
+                # Fallback: try to infer from dataset name or use 0
+                sparsity_map[dataset] = 0.0
+
+        dataset_info = df.groupby("dataset").agg({metric_col: "mean"}).reset_index()
+        dataset_info["sparsity"] = dataset_info["dataset"].map(sparsity_map)
     else:
         dataset_info = (
             df.groupby("dataset")
@@ -368,6 +394,8 @@ def create_combined_figure(df, output_path, top_n=10, use_aggregated=False):
 
     # Save figure
     output_path = Path(output_path)
+    # This repository publishes one vector artifact per figure. The manuscript
+    # repository additionally writes PNG and SVG; neither is needed here.
     plt.savefig(output_path.with_suffix(".pdf"), bbox_inches="tight")
     print(f"Saved: {output_path.with_suffix('.pdf')}")
 
@@ -378,18 +406,10 @@ def main():
     """Main execution."""
     # Setup paths
     script_dir = Path(__file__).parent
-    repo_root = script_dir.parent.parent
-    results_dir = repo_root / "results"
-    output_dir = repo_root / "paper" / "generated" / "figures"
+    results_dir = script_dir.parent.parent / "results"
+    output_dir = script_dir.parent.parent / "paper" / "generated" / "figures"
     output_dir.mkdir(parents=True, exist_ok=True)
     output_file = output_dir / "figure_1"
-
-    # Load dataset inventory for sparsity labels (public, CSV-based source of truth)
-    inventory_file = repo_root / "results" / "dataset_inventory.csv"
-    inventory = pd.read_csv(inventory_file)[["dataset_id", "sparsity_fraction"]]
-    inventory = inventory.rename(
-        columns={"dataset_id": "dataset", "sparsity_fraction": "sparsity"}
-    )
 
     # Check if aggregated statistics are available
     aggregated_file = results_dir / "aggregated" / "statistics.csv"
@@ -400,10 +420,6 @@ def main():
         df = load_and_process(
             results_dir, chunking_type="balanced", normalize=False, use_aggregated=True
         )
-        df = df.merge(inventory, on="dataset", how="left", suffixes=("", "_inv"))
-        if "sparsity_inv" in df.columns:
-            df["sparsity"] = df["sparsity"].fillna(df["sparsity_inv"])
-            df = df.drop(columns=["sparsity_inv"])
         print(
             f"Loaded {len(df)} aggregated results from {df['dataset'].nunique()} datasets"
         )
@@ -420,7 +436,7 @@ def main():
     print("\n" + "=" * 70)
     print("FIGURE GENERATION COMPLETE")
     print("=" * 70)
-    print(f"\nOutput: {output_file}.pdf")
+    print(f"\nOutput: {output_file}.png and {output_file}.svg")
     print("\nFigure features:")
     print("  - Viridis color palette")
     print("  - Gray bars showing mean values across datasets")
@@ -429,7 +445,7 @@ def main():
         print("  - No error bars on panel A (compression is deterministic)")
     print("  - Large, readable fonts (18-24pt)")
     print("  - 3 panels stacked vertically")
-    print("  - Publication-quality vector PDF")
+    print("  - Publication-quality 300 DPI PNG + vector SVG")
 
 
 if __name__ == "__main__":

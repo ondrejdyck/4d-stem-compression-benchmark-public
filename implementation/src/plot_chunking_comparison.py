@@ -12,6 +12,13 @@ import numpy as np
 from pathlib import Path
 import sys
 
+# Embed TrueType rather than matplotlib's default Type 3 fonts. Type 3 is
+# rejected by several journals' production systems and carries no ToUnicode
+# map, so text in the figure cannot be selected, searched or read aloud.
+plt.rcParams["pdf.fonttype"] = 42
+plt.rcParams["ps.fonttype"] = 42
+
+
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 from data_loader import load_and_process
@@ -214,6 +221,8 @@ def create_chunking_comparison_plot(
 
     # Save figure
     output_path = Path(output_path)
+    # This repository publishes one vector artifact per figure. The manuscript
+    # repository additionally writes PNG and SVG; neither is needed here.
     plt.savefig(output_path.with_suffix(".pdf"), bbox_inches="tight")
     print(f"Saved: {output_path.with_suffix('.pdf')}")
 
@@ -400,9 +409,8 @@ def main():
     """Main execution function."""
     # Setup paths
     script_dir = Path(__file__).parent
-    repo_root = script_dir.parent.parent
-    results_dir = repo_root / "results"
-    output_dir = repo_root / "paper" / "generated" / "figures"
+    results_dir = script_dir.parent.parent / "results"
+    output_dir = script_dir.parent.parent / "paper" / "generated" / "figures"
     output_dir.mkdir(parents=True, exist_ok=True)
     output_file = output_dir / "figure_4"
 

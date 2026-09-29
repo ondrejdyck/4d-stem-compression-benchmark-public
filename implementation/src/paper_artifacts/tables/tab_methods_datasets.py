@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Generate the Methods dataset table in LaTeX/ASCII/CSV.
+"""Generate Table 1 (Methods: datasets) in LaTeX/ASCII/CSV.
+
+This script reproduces the Methods table labeled:
+  \\label{tab:datasets}
 
 Outputs (synchronized):
 - LaTeX:  paper/generated/tables/table_datasets.tex
@@ -45,6 +48,8 @@ def _latex_escape(text: str) -> str:
 
 
 def _size_display(uncompressed_bytes: int) -> str:
+    """Format uncompressed size for display (GiB/MiB)."""
+
     gib = uncompressed_bytes / (1024**3)
     if gib < 0.1:
         mib = uncompressed_bytes / (1024**2)
@@ -55,6 +60,7 @@ def _size_display(uncompressed_bytes: int) -> str:
 def build_rows(inv: pd.DataFrame) -> list[Row]:
     inv = inv.set_index("dataset_id")
 
+    # Canonical order and labels as used in Methods.
     order = [
         ("4D_EELS", "4D_EELS"),
         ("4D_Diff", "4D_Diff"),
@@ -63,6 +69,8 @@ def build_rows(inv: pd.DataFrame) -> list[Row]:
         ("3D_EELS", "3D_EELS"),
     ]
 
+    # Keep LaTeX-friendly descriptions (used in LaTeX output and also carried into
+    # ASCII/CSV for now).
     descriptions = {
         "4D_EELS": "Full 4D EELS spectrum imaging",
         "4D_Diff": "4D STEM diffraction (unbinned)",

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Radar Chart: Algorithm Performance Comparison
+Radar Chart: Implementation Performance Comparison
 
 Creates a radar chart comparing compression algorithms across three key metrics:
 - Compression ratio
@@ -16,6 +16,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 import argparse
+
+# Embed TrueType rather than matplotlib's default Type 3 fonts. Type 3 is
+# rejected by several journals' production systems and carries no ToUnicode
+# map, so text in the figure cannot be selected, searched or read aloud.
+plt.rcParams["pdf.fonttype"] = 42
+plt.rcParams["ps.fonttype"] = 42
+
 
 # Import shared data loading functions
 from data_loader import load_and_process
@@ -130,7 +137,7 @@ def create_radar_chart(df_balanced, output_dir):
 
     # Add title and legend
     plt.title(
-        "Compression Algorithm Performance Comparison\n(Normalized to Best Performer)",
+        "Compression Implementation Performance Comparison\n(Normalized to Best Performer)",
         fontsize=15,
         fontweight="bold",
         pad=30,
@@ -169,18 +176,22 @@ def create_radar_chart(df_balanced, output_dir):
 
     # Save figure
     plt.tight_layout()
-    output_file = output_dir / "figure_2.pdf"
-    plt.savefig(output_file, bbox_inches="tight")
-    print(f"✓ Saved: {output_file}")
+    # This repository publishes one vector artifact per figure. The manuscript
+    # repository additionally writes PNG and SVG; neither is needed here.
+    output_pdf = output_dir / "figure_2.pdf"
+    plt.savefig(output_pdf, bbox_inches="tight")
+    print(f"✓ Saved: {output_pdf}")
 
-    plt.show()
+    # NOTE: Avoid plt.show() in automated/headless runs (it can block execution).
+    # The figure is saved above as PNG+SVG.
+    # plt.show()
 
     # Print summary table
     print("\n" + "=" * 80)
     print("ALGORITHM PERFORMANCE SUMMARY")
     print("=" * 80)
     print(
-        f"{'Algorithm':<20} {'Compression':<15} {'Write (GiB/s)':<15} {'Read (GiB/s)':<15}"
+        f"{'Implementation':<20} {'Compression':<15} {'Write (GiB/s)':<15} {'Read (GiB/s)':<15}"
     )
     print("-" * 80)
     for algo_name, m in metrics.items():
@@ -216,18 +227,16 @@ def main():
     else:
         # Auto-detect: script is in implementation/src/, results is in project root
         script_dir = Path(__file__).parent
-        repo_root = script_dir.parent.parent
-        results_dir = repo_root / "results"
+        results_dir = script_dir.parent.parent / "results"
 
     if args.output:
         output_dir = Path(args.output)
     else:
-        output_dir = repo_root / "paper" / "generated" / "figures"
-
-    output_dir.mkdir(parents=True, exist_ok=True)
+        output_dir = script_dir.parent.parent / "paper" / "generated" / "figures"
+        output_dir.mkdir(parents=True, exist_ok=True)
 
     print("=" * 80)
-    print("RADAR CHART GENERATOR - Compression Algorithm Comparison")
+    print("RADAR CHART GENERATOR - Compression Implementation Comparison")
     print("=" * 80)
     print(f"Results directory: {results_dir}")
     print(f"Output directory: {output_dir}")
