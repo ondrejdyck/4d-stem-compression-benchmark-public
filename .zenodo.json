@@ -1,0 +1,29 @@
+{
+  "title": "Inference-Sufficient Representations for High-Throughput Measurement: Lessons from Lossless Compression Benchmarks in 4D-STEM",
+  "description": "<p>Code and generated artifacts for the manuscript of the same name.</p><p>A benchmark of thirteen lossless compression implementations across five 4D-STEM datasets, under three chunking strategies, measuring compression ratio and read/write throughput over ten independent runs. The repository holds the aggregated benchmark statistics, every figure and table in the manuscript, and the code that regenerates them from those statistics alone.</p><p>It also contains a multislice simulation of a pristine WSe<sub>2</sub> monolayer whose generating description is known exactly &mdash; 347 bytes of specimen and instrument parameters. Because the expected intensity at every detector pixel is therefore known, the shortest possible code for the counts can be computed rather than estimated, which is what lets the manuscript state how far the best available implementation sits from the entropy bound. A verification script checks a regenerated dataset against committed SHA-256 digests.</p><p>The raw 4D-STEM datasets are not included; they are not ours to publish. A small synthetic fixture exercises the same code paths without them.</p>",
+  "upload_type": "software",
+  "license": "MIT",
+  "access_right": "open",
+  "creators": [
+    { "name": "Dyck, Ondrej", "affiliation": "Center for Nanophase Materials Sciences, Oak Ridge National Laboratory" },
+    { "name": "Lupini, Andrew R.", "affiliation": "Center for Nanophase Materials Sciences, Oak Ridge National Laboratory" },
+    { "name": "Borisevich, Albina", "affiliation": "Center for Nanophase Materials Sciences, Oak Ridge National Laboratory" },
+    { "name": "Chi, Miaofang", "affiliation": "Center for Nanophase Materials Sciences, Oak Ridge National Laboratory" },
+    { "name": "Vasudevan, Rama K.", "affiliation": "Center for Nanophase Materials Sciences, Oak Ridge National Laboratory" },
+    { "name": "Jesse, Stephen", "affiliation": "Center for Nanophase Materials Sciences, Oak Ridge National Laboratory" }
+  ],
+  "keywords": [
+    "4D-STEM",
+    "scanning transmission electron microscopy",
+    "lossless compression",
+    "HDF5",
+    "Blosc",
+    "data reduction",
+    "information theory",
+    "multislice simulation"
+  ],
+  "language": "eng",
+  "grants": [
+    { "id": "10.13039/100006151::DE-AC05-00OR22725" }
+  ]
+}

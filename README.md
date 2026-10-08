@@ -39,4 +39,10 @@ Twelve artifacts — seven figures and five tables — in about ten seconds. Fig
 
 ## Citation
 
-Manuscript under review.
+Manuscript under review. `CITATION.cff` carries the authors and title; each
+release is archived on Zenodo with a DOI.
+
+## Licence
+
+MIT, see `LICENSE`. Authored by UT-Battelle, LLC under Contract
+No. DE-AC05-00OR22725 with the U.S. Department of Energy.

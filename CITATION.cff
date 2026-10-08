@@ -1,0 +1,56 @@
+cff-version: 1.2.0
+title: >-
+  Inference-Sufficient Representations for High-Throughput Measurement:
+  Lessons from Lossless Compression Benchmarks in 4D-STEM
+message: >-
+  If you use this software or its results, please cite the manuscript.
+type: software
+license: MIT
+repository-code: https://github.com/ondrejdyck/4d-stem-compression-benchmark-public
+abstract: >-
+  Benchmark of thirteen lossless compression implementations on five 4D-STEM
+  datasets, together with the code that produces every figure and table in the
+  accompanying manuscript, and a multislice simulation whose generating
+  description is known exactly so that the shortest code for its counts can be
+  computed rather than estimated.
+keywords:
+  - 4D-STEM
+  - scanning transmission electron microscopy
+  - lossless compression
+  - HDF5
+  - Blosc
+  - data reduction
+  - information theory
+  - multislice simulation
+authors:
+  - given-names: Ondrej
+    family-names: Dyck
+    email: dyckoe@ornl.gov
+    affiliation: >-
+      Center for Nanophase Materials Sciences, Oak Ridge National Laboratory,
+      Oak Ridge, TN 37831, USA
+  - given-names: Andrew R.
+    family-names: Lupini
+    affiliation: >-
+      Center for Nanophase Materials Sciences, Oak Ridge National Laboratory,
+      Oak Ridge, TN 37831, USA
+  - given-names: Albina
+    family-names: Borisevich
+    affiliation: >-
+      Center for Nanophase Materials Sciences, Oak Ridge National Laboratory,
+      Oak Ridge, TN 37831, USA
+  - given-names: Miaofang
+    family-names: Chi
+    affiliation: >-
+      Center for Nanophase Materials Sciences, Oak Ridge National Laboratory,
+      Oak Ridge, TN 37831, USA
+  - given-names: Rama K.
+    family-names: Vasudevan
+    affiliation: >-
+      Center for Nanophase Materials Sciences, Oak Ridge National Laboratory,
+      Oak Ridge, TN 37831, USA
+  - given-names: Stephen
+    family-names: Jesse
+    affiliation: >-
+      Center for Nanophase Materials Sciences, Oak Ridge National Laboratory,
+      Oak Ridge, TN 37831, USA
