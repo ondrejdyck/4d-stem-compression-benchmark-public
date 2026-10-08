@@ -7,6 +7,15 @@ message: >-
 type: software
 license: MIT
 repository-code: https://github.com/ondrejdyck/4d-stem-compression-benchmark-public
+version: 1.0.0
+date-released: 2026-10-08
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.23247489
+    description: Concept DOI, always resolving to the latest version
+  - type: doi
+    value: 10.5281/zenodo.23247490
+    description: DOI for version 1.0.0
 abstract: >-
   Benchmark of thirteen lossless compression implementations on five 4D-STEM
   datasets, together with the code that produces every figure and table in the
