@@ -2,10 +2,11 @@
 name = "4d-stem-compression-benchmark-public"
 version = "0.0.0"
 description = "Public-release artifacts and scripts for 4D-STEM compression benchmarking"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 
 dependencies = [
-  "numpy>=1.24.0",
+  # 2.4.0 is yanked upstream ("Backward compatibility bug") and uv warns on it.
+  "numpy>=1.24.0,<2.4.0",
   "scipy>=1.10.0",
   "h5py>=3.8.0",
   "pandas>=2.0.0",
@@ -32,17 +33,19 @@ notebooks = [
 # Only needed to regenerate the simulated dataset of the Discussion; the
 # benchmark itself does not use them. PySlice is pinned to a tag rather than a
 # branch so the multislice physics is fixed at the version this work used.
-# PySlice requires Python 3.12; the benchmark itself runs on 3.11, so the
-# marker keeps this extra from raising the floor for everyone else.
+# The python_version markers that used to guard these are gone: the project
+# floor is now 3.12, which PySlice requires, so they were no-ops.
 simulation = [
-  "pyslice[fast] @ git+https://github.com/sea-ecosystem/PySlice.git@4dstem-compression-2026 ; python_version >= '3.12'",
+  "pyslice[fast] @ git+https://github.com/sea-ecosystem/PySlice.git@4dstem-compression-2026",
   "ase>=3.22",
   # ovito arrives through PySlice. 3.16.1.post1 is a macOS-arm64-only
   # post-release, so resolving to "newest that satisfies" leaves this extra
   # uninstallable on Linux. 3.16.1 is the version the published dataset was
   # generated with and the one that ships a manylinux wheel.
-  "ovito==3.16.1 ; python_version >= '3.12'",
+  "ovito==3.16.1",
 ]
 
 [tool.uv]
+# This repository is used as an application/research project rather than a
+# distributable Python package.
 package = false
