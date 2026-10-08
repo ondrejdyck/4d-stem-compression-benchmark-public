@@ -1,81 +1,73 @@
-# Implementation
+# Compression benchmark
 
-This directory contains the code used to generate the paper artifacts and to run the benchmark on local 4D-STEM datasets.
+Measures compression ratio and read/write throughput for thirteen lossless implementations against 4D-STEM datasets, under three chunking strategies. This is what produces the numbers every figure and table in the manuscript is built from.
 
-## Contents
+Table 2 of the manuscript is the authoritative list of implementations; Table 1 describes the five datasets used.
 
-- `src/compression_benchmark.py` — core benchmark engine
-- `src/run_benchmark.py` — single-dataset CLI
-- `src/run_all_benchmarks.py` — batch runner over local `.emd` files
-- `src/run_multiple_benchmarks.py` — repeated runs for variability analysis
-- `src/aggregate_multi_run_results.py` — combines repeated-run outputs
-- `src/data_loader.py` — shared result-loading utilities
-- `src/plot_*.py` — the four benchmark figures
-- `src/paper_artifacts/tables/` — the six generated tables
-- `src/paper_artifacts/figures/` — the three conceptual figures
-- `src/paper_artifacts/simulation/` — multislice simulation of the dataset behind Figure 6
-- `src/paper_artifacts/verify_reproduction.py` — checks a regenerated dataset against committed digests
-- `src/paper_artifacts/datasets/` — dataset inventory
-- `src/smoke_test_public.py` — verifies the trimmed public workflow using the included fixture
+## Data in
 
-## Data
+Datasets go in `data/`, as EMD 1.0 or any HDF5 file with a 4D array. EMD 1.0 puts the cube at `/version_1/data/datacubes/datacube_000/data`; other layouts are found by shape.
 
-The public repo does not include raw benchmark datasets. The benchmark scripts expect local `.emd` files when run against real data.
+**The datasets behind the manuscript are not included.** They run from 8 MiB to 8 GiB and are not ours to publish. What is committed in `results/` is the aggregated output of the ten-run sweep over them, which is all the figures and tables need — so every artifact in `paper/generated/` rebuilds from this repository alone.
 
-For the original study, raw datasets were stored locally and are not included here.
-
-The committed `results/` CSV files are sufficient to regenerate the paper tables and figures.
-
-## Typical usage
-
-Run a single dataset:
-
-```bash
-uv run python src/run_benchmark.py /path/to/dataset.emd
-```
-
-Run all local datasets:
-
-```bash
-uv run python src/run_all_benchmarks.py --data-dir /path/to/data --yes
-```
-
-Generate paper tables/figures from existing results:
-
-These commands are deterministic when run against the committed CSV outputs.
-
-```bash
-uv run python src/paper_artifacts/datasets/build_dataset_inventory.py --data-dir /path/to/data
-uv run python src/paper_artifacts/tables/tab_methods_datasets.py
-uv run python src/paper_artifacts/tables/tab_dataset_summary.py
-uv run python src/paper_artifacts/tables/tab_implementation_families.py
-uv run python src/paper_artifacts/tables/tab_chunking_summary.py
-uv run python src/plot_combined_performance.py
-uv run python src/plot_radar_chart.py
-uv run python src/plot_chunking_comparison.py
-uv run python src/plot_sparsity_compression.py
-```
-
-Smoke test the public workflow without raw data:
+To exercise the benchmark itself without them, `fixtures/smoke_test.emd` is a small synthetic file that runs the same paths:
 
 ```bash
 uv run python src/smoke_test_public.py
 ```
 
-## The simulated dataset
+`compression_benchmark.py` also falls back to that fixture when no dataset is given, so the repository runs end to end out of the box.
 
-Figure 6 and Table 6 rest on a simulated dataset rather than measured data. Regenerating it needs the `simulation` extra, Python 3.12 and a CUDA device:
+## One run
 
 ```bash
-cd src
-export FIGURE_DATA_DIR=/path/for/output
-
-uv sync --extra simulation
-uv run python -m paper_artifacts.simulation.simulate_dataset
-uv run python -m paper_artifacts.tables.tab_generative_codelength
-uv run python -m paper_artifacts.verify_reproduction
+uv run python src/run_benchmark.py data/<dataset>.emd
+uv run python src/run_benchmark.py data/<dataset>.emd --name <label> --output <dir>
 ```
 
-`verify_reproduction` needs NumPy alone, not the simulation stack, so a dataset can be checked without a GPU. It exits non-zero if any array differs from the committed digests.
+Writes `results/<name>/benchmark_results.csv`, `metadata.json`, and a readable summary. `--help` lists the rest.
 
-The three conceptual figures are generated from `src/paper_artifacts/figures/`. Figure 6's generator reads the dataset written above; the other two need no inputs.
+## Ten runs, which is what the paper reports
+
+Every error bar in the manuscript is a min–max range over ten independent runs of the same implementation on the same dataset. Compression ratio is deterministic and does not vary; the timings do, and the paper reports their spread rather than a single number.
+
+```bash
+uv run python src/run_multiple_benchmarks.py --n-runs 10
+uv run python src/aggregate_multi_run_results.py
+```
+
+The first loops; the second collapses the runs into `results/aggregated/statistics.csv`, which is the one file the figures and tables read. Both take `--help`.
+
+A full ten-run sweep over all five datasets is hours of work, most of it in gzip-9. `run_multiple_benchmarks.py --start-run N` resumes an interrupted sweep rather than starting over.
+
+## What comes out
+
+```
+results/
+├── <dataset>/                  a single run writes here
+│   ├── benchmark_results.csv
+│   ├── metadata.json
+│   └── <dataset>_detailed_results.txt
+├── run_NNN_<timestamp>/        the sweep writes one of these per run,
+│   └── <dataset>/              each holding the same per-dataset directories
+├── aggregated/
+│   ├── statistics.csv          mean, sd, min, max, median, CV% per method
+│   ├── all_runs_combined.csv
+│   └── summary_report.txt
+└── dataset_inventory.csv       shape, dtype, sparsity, max value per dataset
+```
+
+`metadata.json` is per-run and is not published; `statistics.csv` and `dataset_inventory.csv` are. Anything that needs sparsity reads it from the inventory for that reason.
+
+## Code
+
+| file | role |
+|---|---|
+| `src/compression_benchmark.py` | the measurement itself — writes, reads, times |
+| `src/run_benchmark.py` | one dataset, one run |
+| `src/run_all_benchmarks.py` | every dataset in `data/`, one run each |
+| `src/run_multiple_benchmarks.py` | the ten-run sweep |
+| `src/aggregate_multi_run_results.py` | runs → `aggregated/statistics.csv` |
+| `src/paper_artifacts/datasets/build_dataset_inventory.py` | writes `dataset_inventory.csv` |
+
+The figure and table generators are documented separately, in `src/paper_artifacts/README.md`.
