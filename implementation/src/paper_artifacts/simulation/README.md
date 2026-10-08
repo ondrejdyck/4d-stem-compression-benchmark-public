@@ -55,7 +55,7 @@ and keep only the virtual images and the code lengths), `PLAIN_PRECISION`
 
 ## The physics
 
-The multislice physics is [PySlice](https://github.com/h-walk/PySlice)'s, pinned
+The multislice physics is [PySlice](https://github.com/sea-ecosystem/PySlice)'s, pinned
 at tag `4dstem-compression-2026`. This package supplies the specimen, the grid,
 the dose and Poisson sampling, the scan loop, and the code-length accumulation.
 
