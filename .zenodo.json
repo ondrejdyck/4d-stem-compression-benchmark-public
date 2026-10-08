@@ -22,8 +22,5 @@
     "information theory",
     "multislice simulation"
   ],
-  "language": "eng",
-  "grants": [
-    { "id": "10.13039/100006151::DE-AC05-00OR22725" }
-  ]
+  "language": "eng"
 }
