@@ -7,8 +7,8 @@ This script combines results from multiple benchmark runs and computes statistic
 
 Usage:
     python aggregate_multi_run_results.py
-    python aggregate_multi_run_results.py --results-dir ../../results
-    python aggregate_multi_run_results.py --output aggregated_stats.csv
+    python aggregate_multi_run_results.py --results-dir /path/to/results
+    python aggregate_multi_run_results.py --output-dir /path/for/output
 
 Input structure:
     results/
@@ -268,8 +268,11 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
     
-    parser.add_argument('--results-dir', type=str, default='../../results',
-                       help='Base results directory containing run_XXX folders (default: ../../results)')
+    # Anchored on this file, not the working directory. '../../results'
+    # resolved correctly only from implementation/src; run from
+    # implementation/ as the README invites, it landed outside the repository.
+    parser.add_argument('--results-dir', type=str, default=str(Path(__file__).resolve().parents[2] / "results"),
+                       help="Base results directory containing run_XXX folders (default: the repository's results/)")
     parser.add_argument('--output-dir', type=str, default=None,
                        help='Output directory for aggregated results (default: results_dir/aggregated)')
     parser.add_argument('--verbose', action='store_true', default=True,

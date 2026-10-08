@@ -32,6 +32,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import pandas as pd
+from paper_artifacts.data_loader import require_aggregated, require_inventory
 
 
 @dataclass(frozen=True)
@@ -242,6 +243,13 @@ def write_latex(rows: list[Row], out_path: Path) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate dataset summary table")
     parser.add_argument(
+        "--results-dir",
+        type=Path,
+        default=None,
+        help="Directory holding the benchmark results "
+             "(default: the repository's results/)",
+    )
+    parser.add_argument(
         "--dataset-inventory",
         type=Path,
         default=None,
@@ -256,12 +264,11 @@ def main() -> None:
     args = parser.parse_args()
 
     repo_root = _repo_root_from_script(Path(__file__))
-    inv_path = args.dataset_inventory or (
-        repo_root / "results" / "dataset_inventory.csv"
-    )
-    stats_path = args.statistics or (
-        repo_root / "results" / "aggregated" / "statistics.csv"
-    )
+    results_dir = args.results_dir or (repo_root / "results")
+    # An explicit file flag wins; otherwise derive it from --results-dir, which
+    # also gives the shared "it is missing, here is how to make it" message.
+    inv_path = args.dataset_inventory or require_inventory(results_dir)
+    stats_path = args.statistics or require_aggregated(results_dir)
 
     inv = pd.read_csv(inv_path)
     stats = pd.read_csv(stats_path)

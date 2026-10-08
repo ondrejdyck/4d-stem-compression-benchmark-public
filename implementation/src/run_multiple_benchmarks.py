@@ -172,10 +172,15 @@ After completion:
                        help='Number of complete benchmark runs (default: 10)')
     parser.add_argument('--start-run', type=int, default=1,
                        help='Starting run number (for resuming, default: 1)')
-    parser.add_argument('--data-dir', type=str, default='../data',
-                       help='Directory containing .emd files (default: ../data)')
-    parser.add_argument('--output-base', type=str, default='../../results',
-                       help='Base directory for results (default: ../../results)')
+    # Anchored on this file: '../data' resolved to a non-existent <repo>/data
+    # when run from implementation/, which is where the README says to stand.
+    parser.add_argument('--data-dir', type=str, default=str(Path(__file__).resolve().parents[1] / "data"),
+                       help="Directory containing .emd files (default: implementation/data/)")
+    # Anchored on this file, not the working directory. '../../results'
+    # resolved correctly only from implementation/src; run from
+    # implementation/ as the README invites, it landed outside the repository.
+    parser.add_argument('--output-base', type=str, default=str(Path(__file__).resolve().parents[2] / "results"),
+                       help="Base directory for results (default: the repository's results/)")
     parser.add_argument('--datasets', nargs='+', default=None,
                        help='Specific datasets to run (default: all)')
     parser.add_argument('--skip', nargs='+', default=None,
@@ -334,7 +339,8 @@ After completion:
         print(f"   python aggregate_multi_run_results.py --results-dir {output_base}")
         print()
         print("2. Generate figures with error bars:")
-        print("   python generate_all_figures.py --use-statistics")
+        print("   cd implementation/src &&"
+          " uv run python -m paper_artifacts.generate_all")
         print()
         print("3. Update paper with statistical analysis")
         print("="*100)

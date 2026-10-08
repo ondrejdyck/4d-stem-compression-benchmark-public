@@ -31,13 +31,12 @@ import csv
 import json
 import os
 from pathlib import Path
+from paper_artifacts.outputs import simulated_dataset_path
 
 import numpy as np
 
 REPO = Path(__file__).resolve().parents[4]
-DEFAULT_NPZ = Path(
-    os.environ.get("FIGURE_DATA_DIR", Path.home() / "4dstem-figure-data")
-) / "wse2_pristine_128x128_374e.npz"
+DEFAULT_NPZ = simulated_dataset_path()
 
 
 # --------------------------------------------------------------------------
@@ -241,7 +240,27 @@ def write_csv_out(rows, path: Path) -> None:
 
 
 def main() -> None:
-    npz = Path(os.environ.get("FIGURE_DATASET", DEFAULT_NPZ))
+    import argparse
+    import sys
+
+    # --npz was previously only an environment variable, and a missing dataset
+    # surfaced as a bare FileNotFoundError from np.load several frames deep.
+    ap = argparse.ArgumentParser(description=__doc__.strip().splitlines()[0])
+    ap.add_argument("--npz", type=Path,
+                    default=Path(os.environ.get("FIGURE_DATASET", DEFAULT_NPZ)),
+                    help="the simulated dataset to read")
+    npz = ap.parse_args().npz
+
+    if not npz.exists():
+        sys.exit(
+            f"No simulated dataset at {npz}\n"
+            "\n"
+            "Table 6 is computed from the simulated cube, which is not committed\n"
+            "-- it is regenerable exactly. Generate it first; see\n"
+            "implementation/src/paper_artifacts/simulation/README.md.\n"
+            "\n"
+            "Set FIGURE_DATA_DIR, or pass --npz, if it lives elsewhere."
+        )
     print(f"reading {npz}")
     rows, extra = compute_rows(npz)
     write_latex(rows, extra, REPO / "paper/generated/tables/table_generative_codelength.tex")

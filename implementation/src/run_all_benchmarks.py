@@ -146,14 +146,19 @@ Examples:
     parser.add_argument(
         "--data-dir",
         type=str,
-        default="../data",
-        help="Directory containing .emd files (default: ../data)",
+        # Anchored on this file: "../data" resolved to a non-existent <repo>/data
+        # when run from implementation/, which is where the README says to stand.
+        default=str(Path(__file__).resolve().parents[1] / "data"),
+        help="Directory containing .emd files (default: implementation/data/)",
     )
     parser.add_argument(
         "--output-dir",
         type=str,
-        default="../../results",
-        help="Base directory for results (default: ../../results)",
+        # Anchored on this file, not the working directory. '../../results'
+    # resolved correctly only from implementation/src; run from
+    # implementation/ as the README invites, it landed outside the repository.
+        default=str(Path(__file__).resolve().parents[2] / "results"),
+        help="Base directory for results (default: the repository's results/)",
     )
     parser.add_argument(
         "--skip",
@@ -317,7 +322,9 @@ Examples:
         print(f"\nResults saved to: {output_dir.resolve()}")
         print("\nNext steps:")
         print("  1. Review results in output directory")
-        print("  2. Generate visualizations: python generate_all_figures.py")
+        print("  2. Rebuild the artifacts:")
+        print("       cd implementation/src &&"
+              " uv run python -m paper_artifacts.generate_all")
         print("  3. Update paper with new results")
         sys.exit(0)
 

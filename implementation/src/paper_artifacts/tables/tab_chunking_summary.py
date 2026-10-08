@@ -20,7 +20,10 @@ prefix (real_space, balanced, single_frame) and compute the mean of:
 - write_throughput_gbs_mean
 - read_throughput_gbs_mean
 
-across the 13 compression implementations available for each chunking strategy.
+across the twelve compression implementations available for each chunking
+strategy, together with the uncompressed baseline. The baseline is the same in
+every row, so it does not affect the comparison between strategies, which is
+what the table is for.
 
 Sparsity is defined by exact zeros; all benchmarks are lossless.
 """
@@ -33,6 +36,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import pandas as pd
+from paper_artifacts.data_loader import require_aggregated
 
 
 @dataclass(frozen=True)
@@ -181,6 +185,13 @@ def write_latex(rows: list[Row], out_path: Path) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate chunking summary table")
     parser.add_argument(
+        "--results-dir",
+        type=Path,
+        default=None,
+        help="Directory holding the benchmark results "
+             "(default: the repository's results/)",
+    )
+    parser.add_argument(
         "--statistics",
         type=Path,
         default=None,
@@ -189,9 +200,9 @@ def main() -> None:
     args = parser.parse_args()
 
     repo_root = _repo_root_from_script(Path(__file__))
-    stats_path = args.statistics or (
-        repo_root / "results" / "aggregated" / "statistics.csv"
-    )
+    results_dir = args.results_dir or (repo_root / "results")
+    # An explicit file flag wins; otherwise derive it from --results-dir.
+    stats_path = args.statistics or require_aggregated(results_dir)
 
     stats = pd.read_csv(stats_path)
     rows = compute_rows(stats)

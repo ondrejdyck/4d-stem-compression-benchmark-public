@@ -2,8 +2,10 @@
 """
 Compression Benchmark for 4D STEM Data
 
-Tests various compression strategies on MIB files to determine optimal
-storage and access patterns for large 4D datasets.
+Measures compression ratio and read/write throughput for each lossless
+implementation against a 4D datacube, read from EMD 1.0 or any HDF5 file
+holding a 4D array. MIB is not read here, despite the MiB that appear
+throughout as a unit.
 """
 
 import numpy as np

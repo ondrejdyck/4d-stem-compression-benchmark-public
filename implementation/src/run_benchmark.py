@@ -3,7 +3,7 @@
 Command-line script to run compression benchmarks on 4D STEM datasets.
 
 Usage:
-    python run_benchmark.py <dataset.emd> [--output results/] [--name dataset_name]
+    python run_benchmark.py <dataset.emd> [--output DIR] [--name NAME]
 
 Examples:
     python run_benchmark.py /path/to/dataset.emd
@@ -27,8 +27,8 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  %(prog)s ../data/4D_EELS.emd
-  %(prog)s ../data/4D_Diff.emd --output ../results --name 4D_Diff_test
+  %(prog)s /path/to/dataset.emd
+  %(prog)s /path/to/dataset.emd --name my_dataset
         """,
     )
     parser.add_argument("dataset", type=str, help="Path to EMD/HDF5 dataset")
@@ -36,8 +36,10 @@ Examples:
         "--output",
         "-o",
         type=str,
-        default="../results",
-        help="Output directory for results (default: ../results)",
+        # Anchored on this file: "../results" meant the repository's results/
+        # from implementation/, but implementation/results/ from src/.
+        default=str(Path(__file__).resolve().parents[2] / "results"),
+        help="Output directory for results (default: the repository's results/)",
     )
     parser.add_argument(
         "--name",
@@ -112,9 +114,10 @@ Examples:
         print(f"  - Plot: compression_benchmark.png")
     print()
     print("Next steps:")
-    print("  1. Inspect the CSV and metadata outputs")
-    print("  2. Generate figures/tables from implementation/src")
-    print("  3. Use the paper/generated artifacts as the public reference")
+    print("  1. Repeat for the other datasets, or run run_multiple_benchmarks.py")
+    print("  2. Aggregate: uv run python implementation/src/aggregate_multi_run_results.py")
+    print("  3. Rebuild the artifacts: cd implementation/src &&"
+          " uv run python -m paper_artifacts.generate_all")
     print()
 
     return 0
