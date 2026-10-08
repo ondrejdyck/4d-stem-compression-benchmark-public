@@ -46,9 +46,9 @@ def load_results(results_dir):
 
 def extract_chunking_data(df):
     """
-    Extract base algorithm and chunking strategy from method names.
+    Extract base implementation and chunking strategy from method names.
 
-    Method names follow pattern: {chunk_strategy}_{algorithm}
+    Method names follow pattern: {chunk_strategy}_{implementation}
     e.g., "real_space_gzip_6", "balanced_blosc_zstd", "single_frame_lz4_hdf5"
     """
     # Filter to only HDF5 methods with chunking info
@@ -56,7 +56,7 @@ def extract_chunking_data(df):
         df["method"].str.contains("real_space|balanced|single_frame", na=False)
     ].copy()
 
-    # Extract chunking strategy and base algorithm
+    # Extract chunking strategy and base implementation
     def parse_method(method):
         parts = method.split("_")
         if parts[0] == "real":
@@ -86,12 +86,12 @@ def extract_chunking_data(df):
 
 def select_representative_algorithms(df, n_algorithms=6):
     """
-    Select the 6 key algorithms that perform well across all metrics.
+    Select the 6 key implementations that perform well across all metrics.
 
-    These algorithms were selected based on appearing in top 10 for compression,
+    These implementations were selected based on appearing in top 10 for compression,
     write speed, and read speed (plus blosc_zlib for highest compression).
     """
-    # The 6 key algorithms identified from multi-run analysis
+    # The 6 key implementations identified from multi-run analysis
     selected = [
         "blosc_zlib",  # Highest compression ratio (13.49×)
         "blosc_zstd",  # Best overall balance (13.47×)
@@ -119,7 +119,7 @@ def create_chunking_comparison_plot(
     - B) Write throughput (GiB/s)
     - C) Read throughput (GiB/s)
     """
-    # Select representative algorithms
+    # Select representative implementations
     selected_algos = select_representative_algorithms(df, n_algorithms=6)
     df_plot = df[df["base_algorithm"].isin(selected_algos)].copy()
 
@@ -345,7 +345,7 @@ def print_chunking_summary(df):
         write_col = "write_throughput_gbs"
         read_col = "read_throughput_gbs"
 
-    # Group by base algorithm and chunking strategy
+    # Group by base implementation and chunking strategy
     grouped = (
         df.groupby(["base_algorithm", "chunk_strategy"])
         .agg({comp_col: "mean", write_col: "mean", read_col: "mean"})
@@ -359,7 +359,7 @@ def print_chunking_summary(df):
         "read_throughput_gbs",
     ]
 
-    print("\nAverage performance by algorithm and chunking strategy:")
+    print("\nAverage performance by implementation and chunking strategy:")
     print(grouped.to_string())
 
     # Calculate percentage differences

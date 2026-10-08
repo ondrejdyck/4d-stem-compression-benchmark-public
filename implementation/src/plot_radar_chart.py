@@ -2,7 +2,7 @@
 """
 Radar Chart: Implementation Performance Comparison
 
-Creates a radar chart comparing compression algorithms across three key metrics:
+Creates a radar chart comparing compression implementations across three key metrics:
 - Compression ratio
 - Write throughput
 - Read throughput
@@ -29,7 +29,7 @@ from data_loader import load_and_process
 
 
 def create_radar_chart(df_balanced, output_dir):
-    """Create radar chart comparing key algorithms.
+    """Create radar chart comparing key implementations.
 
     Parameters
     ----------
@@ -39,7 +39,7 @@ def create_radar_chart(df_balanced, output_dir):
         Directory to save output plots
     """
 
-    # Define the 6 key algorithms to compare
+    # Define the 6 key implementations to compare
     # Selected based on top 10 performance across all three metrics
     algorithms = {
         "balanced_blosc_zlib": {"label": "Blosc Zlib", "color": "#06A77D"},
@@ -62,7 +62,7 @@ def create_radar_chart(df_balanced, output_dir):
         write_col = "write_throughput_gbs"
         read_col = "read_throughput_gbs"
 
-    # Calculate mean metrics for each algorithm
+    # Calculate mean metrics for each implementation
     metrics = {}
     for algo_name, algo_info in algorithms.items():
         df_algo = df_balanced[df_balanced["method"] == algo_name]
@@ -97,7 +97,7 @@ def create_radar_chart(df_balanced, output_dir):
     # Create figure
     fig, ax = plt.subplots(figsize=(9, 9), subplot_kw=dict(projection="polar"))
 
-    # Plot each algorithm
+    # Plot each implementation
     for algo_name, values in normalized_metrics.items():
         algo_info = algorithms[algo_name]
         values_plot = values + values[:1]  # Complete the circle
@@ -188,7 +188,7 @@ def create_radar_chart(df_balanced, output_dir):
 
     # Print summary table
     print("\n" + "=" * 80)
-    print("ALGORITHM PERFORMANCE SUMMARY")
+    print("IMPLEMENTATION PERFORMANCE SUMMARY")
     print("=" * 80)
     print(
         f"{'Implementation':<20} {'Compression':<15} {'Write (GiB/s)':<15} {'Read (GiB/s)':<15}"
@@ -205,7 +205,7 @@ def create_radar_chart(df_balanced, output_dir):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Create radar chart comparing compression algorithms"
+        description="Create radar chart comparing compression implementations"
     )
     parser.add_argument(
         "--results",

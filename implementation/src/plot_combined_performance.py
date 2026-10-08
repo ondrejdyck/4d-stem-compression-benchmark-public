@@ -207,7 +207,7 @@ def create_panel(
 
     pivot.index = [method_labels[idx] for idx in pivot.index]
 
-    # Calculate mean for each algorithm (in pivot order)
+    # Calculate mean for each implementation (in pivot order)
     pivot_means = pivot.mean(axis=1)
 
     # Add background shading for mean values FIRST (so it's behind everything)
@@ -221,10 +221,12 @@ def create_panel(
             y_pos,
             mean_val,
             height=bar_height,
-            color="lightgray",
-            alpha=0.3,
+            # Set the greys directly rather than fading "lightgray" with alpha:
+            # alpha applies to the dashed edge as well as the fill, which left
+            # the mean bars all but invisible in print.
+            color="0.88",
             zorder=1,
-            edgecolor="gray",
+            edgecolor="0.45",
             linewidth=1,
             linestyle="--",
         )
@@ -288,7 +290,10 @@ def create_panel(
 
     # Formatting - LARGE fonts for publication
     ax.set_xlabel(ylabel, fontsize=22, fontweight="bold")
-    ax.set_ylabel("Compression Algorithm", fontsize=22, fontweight="bold")
+    # The rows are shipped codecs and their settings (blosc_zstd, gzip-9), so
+    # they are implementations, not algorithms. Methods draws that distinction:
+    # DEFLATE is one algorithm behind gzip at all three levels and Blosc Zlib.
+    ax.set_ylabel("Compression Implementation", fontsize=22, fontweight="bold")
     ax.set_title(title, fontsize=24, fontweight="bold", pad=15)
 
     # Increase tick label size
@@ -369,11 +374,10 @@ def create_combined_figure(df, output_path, top_n=10, use_aggregated=False):
 
     # Add mean bar to legend
     mean_patch = Patch(
-        facecolor="lightgray",
-        edgecolor="gray",
+        facecolor="0.88",
+        edgecolor="0.45",
         linestyle="--",
         linewidth=1,
-        alpha=0.3,
         label="Mean across datasets",
     )
     handles.append(mean_patch)

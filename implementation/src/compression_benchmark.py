@@ -153,13 +153,13 @@ def analyze_data_sparsity(data_4d):
 
 
 def benchmark_hdf5_compression(data_4d, output_dir):
-    """Test HDF5 compression algorithms"""
+    """Test HDF5 compression implementations"""
     print("\n=== HDF5 Compression Benchmark ===")
 
     results = {}
     original_size = data_4d.nbytes
 
-    # Test different compression algorithms
+    # Test different compression implementations
     compression_methods = {
         "none": None,
         "gzip_1": ("gzip", 1),
