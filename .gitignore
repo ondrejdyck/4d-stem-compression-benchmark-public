@@ -20,5 +20,10 @@ implementation/results/
 results/smoke_test_public/
 
 # Local arXiv submission staging area and bundle
+# Kept although prepare_arxiv_bundle.sh is gone. The directory it produced
+# held copies of main.tex, sections/*.tex and references.bib -- manuscript
+# sources this repository must not publish -- and dropping these two lines
+# un-ignored them, at which point `git add -A` staged the lot. The pre-push
+# guard refused it. These stay as the second layer.
 arxiv-src/
 arxiv-src.tar.gz
