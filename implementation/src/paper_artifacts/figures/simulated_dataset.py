@@ -20,12 +20,11 @@ from matplotlib.colors import LogNorm
 # map, so text in the figure cannot be selected, searched or read aloud.
 plt.rcParams["pdf.fonttype"] = 42
 plt.rcParams["ps.fonttype"] = 42
+from paper_artifacts.outputs import save_figure, preview_requested, simulated_dataset_path
 
 
-# matplotlib.path.Path is imported below, so pathlib is referenced by module.
-NPZ = pathlib.Path(
-    os.environ.get("FIGURE_DATA_DIR", pathlib.Path.home() / "4dstem-figure-data")
-) / "wse2_pristine_128x128_374e.npz"
+
+NPZ = simulated_dataset_path()
 d = np.load(NPZ, allow_pickle=True)
 m = json.loads(str(d["metadata_json"]))
 
@@ -181,7 +180,4 @@ def gather(pt, cx, cy, radius, ax_src, a0=78.0, a1=-78.0, n=40,
 
 gather(d_x, 0.0, 0.0, outer, axes[2])
 
-out = str(pathlib.Path(__file__).with_name("simulated_dataset.png"))
-fig.savefig(out, dpi=300, bbox_inches="tight")
-fig.savefig(out.replace(".png", ".pdf"), bbox_inches="tight")
-print("wrote", out)
+save_figure(fig, 6, preview=preview_requested())

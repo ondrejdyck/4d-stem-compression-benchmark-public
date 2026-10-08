@@ -10,7 +10,8 @@ Creates a 3-panel figure stacked vertically showing:
 Uses the same style as individual cross-dataset plots (viridis colors, gray mean bars).
 
 Usage:
-    python plot_combined_performance.py
+    cd implementation/src
+    uv run python -m paper_artifacts.figures.combined_performance
 """
 
 import numpy as np
@@ -27,8 +28,8 @@ plt.rcParams["ps.fonttype"] = 42
 
 
 # Add parent directory to path
-sys.path.insert(0, str(Path(__file__).parent))
-from data_loader import load_and_process, get_error_bars
+from paper_artifacts.data_loader import load_and_process, get_error_bars, require_aggregated
+from paper_artifacts.outputs import save_figure
 
 
 def create_panel(
@@ -71,7 +72,7 @@ def create_panel(
         # Aggregated data doesn't have sparsity column, need to load from individual dataset metadata
         import json
 
-        results_dir = Path(__file__).parent.parent.parent / "results"
+        results_dir = Path(__file__).resolve().parents[4] / "results"
         sparsity_map = {}
 
         for dataset in df["dataset"].unique():
@@ -306,7 +307,7 @@ def create_panel(
     return pivot.columns  # Return dataset labels for legend
 
 
-def create_combined_figure(df, output_path, top_n=10, use_aggregated=False):
+def create_combined_figure(df, top_n=10, use_aggregated=False, preview=False):
     """
     Create 3-panel combined figure stacked vertically.
 
@@ -396,24 +397,33 @@ def create_combined_figure(df, output_path, top_n=10, use_aggregated=False):
 
     plt.tight_layout()
 
-    # Save figure
-    output_path = Path(output_path)
-    # This repository publishes one vector artifact per figure. The manuscript
-    # repository additionally writes PNG and SVG; neither is needed here.
-    plt.savefig(output_path.with_suffix(".pdf"), bbox_inches="tight")
-    print(f"Saved: {output_path.with_suffix('.pdf')}")
+    save_figure(plt, 1, preview=preview)
 
     plt.close()
+
+
+def _args():
+    """--results-dir, defaulting to the repository's results/.
+
+    Without this the flag was accepted and silently ignored, so a run against
+    the wrong directory reported success over the default data; and --help ran
+    the script instead of printing help.
+    """
+    import argparse
+    ap = argparse.ArgumentParser(description=__doc__.strip().splitlines()[0])
+    ap.add_argument("--results-dir", default=Path(__file__).resolve().parents[4] / "results",
+                    type=Path, help="directory holding aggregated/statistics.csv")
+    ap.add_argument("--preview", action="store_true",
+                    help="also write PNG and SVG beside the PDF")
+    return ap.parse_args()
 
 
 def main():
     """Main execution."""
     # Setup paths
-    script_dir = Path(__file__).parent
-    results_dir = script_dir.parent.parent / "results"
-    output_dir = script_dir.parent.parent / "paper" / "generated" / "figures"
-    output_dir.mkdir(parents=True, exist_ok=True)
-    output_file = output_dir / "figure_1"
+    args = _args()
+    results_dir = args.results_dir
+    require_aggregated(results_dir)
 
     # Check if aggregated statistics are available
     aggregated_file = results_dir / "aggregated" / "statistics.csv"
@@ -435,12 +445,12 @@ def main():
         print("  Note: Run aggregate_multi_run_results.py to enable error bars")
 
     print("\nCreating combined 3-panel figure (stacked vertically)...")
-    create_combined_figure(df, output_file, top_n=10, use_aggregated=use_aggregated)
+    create_combined_figure(df, top_n=10, use_aggregated=use_aggregated, preview=args.preview)
 
     print("\n" + "=" * 70)
     print("FIGURE GENERATION COMPLETE")
     print("=" * 70)
-    print(f"\nOutput: {output_file}.png and {output_file}.svg")
+    # The PDF is the one the manuscript includes; the others are for preview.
     print("\nFigure features:")
     print("  - Viridis color palette")
     print("  - Gray bars showing mean values across datasets")

@@ -20,8 +20,8 @@ plt.rcParams["ps.fonttype"] = 42
 
 
 # Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent))
-from data_loader import load_and_process
+from paper_artifacts.data_loader import load_and_process, require_aggregated
+from paper_artifacts.outputs import save_figure
 
 
 def load_results(results_dir):
@@ -109,7 +109,7 @@ def select_representative_algorithms(df, n_algorithms=6):
 
 
 def create_chunking_comparison_plot(
-    df, output_path, dataset_name=None, use_aggregated=False
+    df, dataset_name=None, use_aggregated=False, preview=False
 ):
     """
     Create multi-panel figure showing chunking effects.
@@ -219,12 +219,7 @@ def create_chunking_comparison_plot(
 
     plt.tight_layout()
 
-    # Save figure
-    output_path = Path(output_path)
-    # This repository publishes one vector artifact per figure. The manuscript
-    # repository additionally writes PNG and SVG; neither is needed here.
-    plt.savefig(output_path.with_suffix(".pdf"), bbox_inches="tight")
-    print(f"Saved: {output_path.with_suffix('.pdf')}")
+    save_figure(plt, 3, preview=preview)
 
     return fig
 
@@ -405,14 +400,28 @@ def print_chunking_summary(df):
             )
 
 
+def _args():
+    """--results-dir, defaulting to the repository's results/.
+
+    Without this the flag was accepted and silently ignored, so a run against
+    the wrong directory reported success over the default data; and --help ran
+    the script instead of printing help.
+    """
+    import argparse
+    ap = argparse.ArgumentParser(description=__doc__.strip().splitlines()[0])
+    ap.add_argument("--results-dir", default=Path(__file__).resolve().parents[4] / "results",
+                    type=Path, help="directory holding aggregated/statistics.csv")
+    ap.add_argument("--preview", action="store_true",
+                    help="also write PNG and SVG beside the PDF")
+    return ap.parse_args()
+
+
 def main():
     """Main execution function."""
     # Setup paths
-    script_dir = Path(__file__).parent
-    results_dir = script_dir.parent.parent / "results"
-    output_dir = script_dir.parent.parent / "paper" / "generated" / "figures"
-    output_dir.mkdir(parents=True, exist_ok=True)
-    output_file = output_dir / "figure_3"
+    args = _args()
+    results_dir = args.results_dir
+    require_aggregated(results_dir)
 
     print("Loading benchmark results...")
     df, use_aggregated = load_results(results_dir)
@@ -433,7 +442,7 @@ def main():
     if use_aggregated:
         print("  Including error bars on panels B & C (min-max range)")
     create_chunking_comparison_plot(
-        df_chunking, output_file, use_aggregated=use_aggregated
+        df_chunking, use_aggregated=use_aggregated, preview=args.preview
     )
 
     print("\n" + "=" * 70)

@@ -8,7 +8,8 @@ Creates a radar chart comparing compression implementations across three key met
 - Read throughput
 
 Usage:
-    python plot_radar_chart.py [--output OUTPUT_DIR]
+    cd implementation/src
+    uv run python -m paper_artifacts.figures.radar_chart
 """
 
 import pandas as pd
@@ -25,10 +26,11 @@ plt.rcParams["ps.fonttype"] = 42
 
 
 # Import shared data loading functions
-from data_loader import load_and_process
+from paper_artifacts.data_loader import load_and_process, require_aggregated
+from paper_artifacts.outputs import save_figure
 
 
-def create_radar_chart(df_balanced, output_dir):
+def create_radar_chart(df_balanced, preview=False):
     """Create radar chart comparing key implementations.
 
     Parameters
@@ -176,11 +178,7 @@ def create_radar_chart(df_balanced, output_dir):
 
     # Save figure
     plt.tight_layout()
-    # This repository publishes one vector artifact per figure. The manuscript
-    # repository additionally writes PNG and SVG; neither is needed here.
-    output_pdf = output_dir / "figure_2.pdf"
-    plt.savefig(output_pdf, bbox_inches="tight")
-    print(f"✓ Saved: {output_pdf}")
+    save_figure(plt, 2, preview=preview)
 
     # NOTE: Avoid plt.show() in automated/headless runs (it can block execution).
     # The figure is saved above as PNG+SVG.
@@ -208,38 +206,25 @@ def main():
         description="Create radar chart comparing compression implementations"
     )
     parser.add_argument(
-        "--results",
-        type=str,
-        default=None,
-        help="Results directory (default: auto-detect)",
+        "--results-dir",
+        type=Path,
+        default=Path(__file__).resolve().parents[4] / "results",
+        help="Directory holding the benchmark results "
+             "(default: the repository's results/)",
     )
     parser.add_argument(
-        "--output",
-        type=str,
-        default=None,
-        help="Output directory for plots (default: same as results)",
+        "--preview", action="store_true",
+        help="also write PNG and SVG beside the PDF",
     )
     args = parser.parse_args()
 
-    # Setup paths
-    if args.results:
-        results_dir = Path(args.results)
-    else:
-        # Auto-detect: script is in implementation/src/, results is in project root
-        script_dir = Path(__file__).parent
-        results_dir = script_dir.parent.parent / "results"
-
-    if args.output:
-        output_dir = Path(args.output)
-    else:
-        output_dir = script_dir.parent.parent / "paper" / "generated" / "figures"
-        output_dir.mkdir(parents=True, exist_ok=True)
+    results_dir = args.results_dir
+    require_aggregated(results_dir)
 
     print("=" * 80)
     print("RADAR CHART GENERATOR - Compression Implementation Comparison")
     print("=" * 80)
     print(f"Results directory: {results_dir}")
-    print(f"Output directory: {output_dir}")
     print()
 
     # Load data using shared data_loader module
@@ -271,7 +256,7 @@ def main():
 
     # Create radar chart
     print("Creating radar chart...")
-    create_radar_chart(df_balanced, output_dir)
+    create_radar_chart(df_balanced, preview=args.preview)
     print()
     print("✓ Radar chart generation complete!")
 

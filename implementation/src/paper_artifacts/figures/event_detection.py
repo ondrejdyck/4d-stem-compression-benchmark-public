@@ -20,11 +20,10 @@ Layout (two tiers):
     object (no axes, no curve) to signal it is an interpretation, not a
     trace.
 
-Run with: python event_detection.py
-Outputs event_detection.png and event_detection.pdf alongside this script.
+Run with: python -m paper_artifacts.figures.event_detection, from implementation/src.
+Writes paper/generated/figures/figure_7.pdf.
 """
 
-import os
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
@@ -37,8 +36,9 @@ from mpl_toolkits.mplot3d import proj3d  # noqa: F401 -- registers the 3d projec
 plt.rcParams["pdf.fonttype"] = 42
 plt.rcParams["ps.fonttype"] = 42
 
+from paper_artifacts.outputs import save_figure, preview_requested
 
-OUTDIR = os.path.dirname(os.path.abspath(__file__))
+
 plt.rcParams["mathtext.fontset"] = "dejavusans"  # match mathtext to the default sans-serif font
 
 # ---------------------------------------------------------------------------
@@ -369,6 +369,4 @@ for _letter, _ax, _title in (
         ha="left", va="bottom",
     )
 
-fig.savefig(os.path.join(OUTDIR, "event_detection.png"), dpi=300, bbox_inches="tight")
-fig.savefig(os.path.join(OUTDIR, "event_detection.pdf"), bbox_inches="tight")
-print("Wrote event_detection.png and event_detection.pdf to", OUTDIR)
+save_figure(fig, 7, preview=preview_requested())

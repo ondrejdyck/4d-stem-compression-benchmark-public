@@ -4,11 +4,10 @@ induction, abduction), shown with the classic beans syllogism (each premise
 tagged with its f/g/h role) and with Corfield's category-theoretic
 triangles, placed to the right of each row.
 
-Run with: python panel_inference_modes.py
-Outputs panel_inference_modes.png and .pdf alongside this script.
+Run with: python -m paper_artifacts.figures.panel_inference_modes, from implementation/src.
+Writes paper/generated/figures/figure_5.pdf.
 """
 
-import os
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch
 from matplotlib.transforms import Bbox
@@ -19,8 +18,9 @@ from matplotlib.transforms import Bbox
 plt.rcParams["pdf.fonttype"] = 42
 plt.rcParams["ps.fonttype"] = 42
 
+from paper_artifacts.outputs import save_figure, preview_requested
 
-OUTDIR = os.path.dirname(os.path.abspath(__file__))
+
 plt.rcParams["mathtext.fontset"] = "dejavusans"
 
 # ---------------------------------------------------------------------------
@@ -235,6 +235,4 @@ def artwork_bbox(pad=0.04):
 
 fig.canvas.draw()
 BBOX = artwork_bbox()
-fig.savefig(os.path.join(OUTDIR, "panel_inference_modes.png"), dpi=300, bbox_inches=BBOX)
-fig.savefig(os.path.join(OUTDIR, "panel_inference_modes.pdf"), bbox_inches=BBOX)
-print("Wrote panel_inference_modes.png and .pdf to", OUTDIR)
+save_figure(fig, 5, preview=preview_requested(), bbox_inches=BBOX)

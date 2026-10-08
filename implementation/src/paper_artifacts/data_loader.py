@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """
-Data Loader Module for 4D STEM Compression Benchmark
+Shared loading of benchmark results.
 
-Provides shared functions for loading and processing benchmark results.
-All visualization scripts should use these functions to ensure consistency.
+Reads what the benchmark wrote and hands the figure and table generators a
+single consistent view of it -- implementation families, error bars, and the
+aggregated statistics they are all built from. It lives inside paper_artifacts
+because those generators are its only callers; the benchmark itself does not
+use it.
 
 Functions:
     load_all_benchmarks() - Load all benchmark CSVs with metadata
@@ -549,3 +552,53 @@ if __name__ == "__main__":
 
     print()
     print("✓ Data loader module test complete!")
+
+
+def require_aggregated(results_dir):
+    """Return the aggregated statistics path, or exit explaining why it is absent.
+
+    Every figure and table in the manuscript is built from this one file. When
+    it is missing the cause is almost always that the benchmark has not been
+    run yet in this checkout, which a bare FileNotFoundError does not say. The
+    message is here rather than in each generator so that all of them, and any
+    later one, report the same thing.
+    """
+    import sys
+
+    path = Path(results_dir) / "aggregated" / "statistics.csv"
+    if path.exists():
+        return path
+    sys.exit(
+        f"No aggregated benchmark statistics at {path}\n"
+        "\n"
+        "Every manuscript figure and table is built from this file. It is\n"
+        "written by aggregating one or more benchmark runs:\n"
+        "\n"
+        "    uv run python implementation/src/run_benchmark.py <dataset>.emd\n"
+        "    uv run python implementation/src/aggregate_multi_run_results.py\n"
+        "\n"
+        "If the results live elsewhere, pass --results-dir."
+    )
+
+
+def require_inventory(results_dir):
+    """Return the dataset-inventory path, or exit explaining why it is absent.
+
+    The sibling of require_aggregated, for the two generators that describe the
+    datasets rather than the benchmark of them.
+    """
+    import sys
+
+    path = Path(results_dir) / "dataset_inventory.csv"
+    if path.exists():
+        return path
+    sys.exit(
+        f"No dataset inventory at {path}\n"
+        "\n"
+        "Tables 1 and 3 describe the datasets from this file. It is written by:\n"
+        "\n"
+        "    cd implementation/src\n"
+        "    uv run python -m paper_artifacts.datasets.build_dataset_inventory\n"
+        "\n"
+        "If the results live elsewhere, pass --results-dir."
+    )

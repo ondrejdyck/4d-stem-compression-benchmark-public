@@ -7,12 +7,14 @@ as float32; compression ratio is not comparable across container widths, and the
 16-bit binary-entropy bound does not govern them.
 
 Usage:
-    uv run python implementation/src/plot_sparsity_compression.py
+    cd implementation/src
+    uv run python -m paper_artifacts.figures.sparsity_compression
 """
 
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import sys
 from pathlib import Path
 
 # Embed TrueType rather than matplotlib's default Type 3 fonts. Type 3 is
@@ -43,11 +45,37 @@ def shannon_entropy_limit(sparsity):
     return 16 / H2
 
 
+# Anchor on this file rather than the working directory. The README invites a
+# reader to run the figure scripts from the repository root, and the other three
+# resolve their paths this way; relative literals only worked from within
+# implementation/src.
+REPO = Path(__file__).resolve().parents[4]
+
+from paper_artifacts.data_loader import require_aggregated
+from paper_artifacts.outputs import save_figure
+
+
+def _args():
+    """--results-dir, defaulting to the repository's results/.
+
+    Without this the flag was accepted and silently ignored, so a run against
+    the wrong directory reported success over the default data; and --help ran
+    the script instead of printing help.
+    """
+    import argparse
+    ap = argparse.ArgumentParser(description=__doc__.strip().splitlines()[0])
+    ap.add_argument("--results-dir", default=Path(__file__).resolve().parents[4] / "results",
+                    type=Path, help="directory holding aggregated/statistics.csv")
+    ap.add_argument("--preview", action="store_true",
+                    help="also write PNG and SVG beside the PDF")
+    return ap.parse_args()
+
+
 def main():
     # Load aggregated statistics
-    script_dir = Path(__file__).parent
-    repo_root = script_dir.parent.parent
-    stats_file = repo_root / "results" / "aggregated" / "statistics.csv"
+    args = _args()
+    preview = args.preview
+    stats_file = require_aggregated(args.results_dir)
     df = pd.read_csv(stats_file)
 
     # Get best compression for each dataset
@@ -154,14 +182,7 @@ def main():
     # Save figure
     plt.tight_layout()
 
-    # This repository publishes one vector artifact per figure. The manuscript
-    # repository additionally writes PNG and SVG; neither is needed here.
-    output_dir = repo_root / "paper" / "generated" / "figures"
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    output_pdf = output_dir / "figure_4.pdf"
-    plt.savefig(output_pdf, bbox_inches="tight")
-    print(f"\n✓ Saved: {output_pdf}")
+    save_figure(plt, 4, preview=preview)
 
     print("\n✓ Figure 4 regenerated successfully!")
 
