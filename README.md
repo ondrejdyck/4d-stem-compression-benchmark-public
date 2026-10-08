@@ -1,5 +1,8 @@
 # 4D STEM Compression Benchmark
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23247489.svg)](https://doi.org/10.5281/zenodo.23247489)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 A benchmark of thirteen lossless compression implementations on 4D-STEM datasets, and the manuscript built from it.
 
 4D-STEM detectors produce data faster than it can be stored, moved or looked at. This measures how far lossless compression closes that gap — and finds that it does not, because compression is bounded by the entropy of the source and the best implementations are already close to that bound. What follows from this is a question about which data to keep, which the manuscript takes up.
@@ -39,8 +42,10 @@ Twelve artifacts — seven figures and five tables — in about ten seconds. Fig
 
 ## Citation
 
-Manuscript under review. `CITATION.cff` carries the authors and title; each
-release is archived on Zenodo with a DOI.
+Manuscript under review. Each release is archived on Zenodo; cite the concept
+DOI [10.5281/zenodo.23247489](https://doi.org/10.5281/zenodo.23247489), which
+always resolves to the latest version. `CITATION.cff` carries the authors and
+title, and GitHub's "Cite this repository" generates from it.
 
 ## Licence
 
